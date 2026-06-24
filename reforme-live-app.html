@@ -415,7 +415,7 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 <!-- ══════════ CLIENT APP ══════════ -->
 <div class="screen" id="screen-client">
   <div class="app-main">
-    <div class="status-bar"><span class="logo">Reformé</span><div style="display:flex;gap:6px;color:#5A5A52;font-size:13px;"><i class="ti ti-wifi"></i><i class="ti ti-battery-2"></i></div></div>
+    <div style="background:#111110;padding:10px 20px 0;flex-shrink:0;"><span class="logo">Reformé</span></div>
 
     <!-- CLIENT SCREENS -->
     <div class="screen active" id="c-dashboard">
@@ -596,6 +596,8 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
         <button class="btn-p" onclick="saveEditProfile()">Save changes</button>
       </div>
     </div>
+    <!-- MESSAGES -->
+    <div class="screen" id="c-messages">
       <div class="page-header"><div class="page-title">Messages</div><div class="page-sub" id="c-msg-trainer-label">Your trainer</div></div>
       <div class="scroll" id="clientMsgList">
         <div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">Loading messages...</div>
@@ -652,7 +654,7 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 <!-- ══════════ TRAINER APP ══════════ -->
 <div class="screen" id="screen-trainer">
   <div class="app-main">
-    <div class="status-bar"><span class="logo">Reformé</span><div style="display:flex;gap:6px;color:#5A5A52;font-size:13px;"><i class="ti ti-wifi"></i><i class="ti ti-battery-2"></i></div></div>
+    <div style="background:#111110;padding:10px 20px 0;flex-shrink:0;"><span class="logo">Reformé</span></div>
 
     <div class="screen active" id="t-clients">
       <div class="page-header">
@@ -1006,19 +1008,28 @@ async function init() {
 }
 
 async function loadProfile() {
-  const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-  if (error || !data) {
-    goTo('screen-ob-goal');
-    return;
-  }
-  currentProfile = data;
-  if (!data.role) { goTo('screen-ob-goal'); return; }
-  if (data.role === 'client' && (!data.weight || !data.calorie_goal)) { goTo('screen-ob-goal'); return; }
-  if (data.role === 'trainer' && !data.calorie_goal) { goTo('screen-ob-trainer'); return; }
-  if (data.role === 'trainer') {
-    loadTrainerApp();
-  } else {
-    loadClientApp();
+  try {
+    const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+    if (error || !data) {
+      goTo('screen-ob-goal');
+      return;
+    }
+    currentProfile = data;
+    if (!data.role) { goTo('screen-ob-goal'); return; }
+    if (data.role === 'client' && (!data.weight || !data.calorie_goal)) { goTo('screen-ob-goal'); return; }
+    if (data.role === 'trainer') {
+      if (!data.calorie_goal) {
+        // Trainer hasn't finished onboarding — set a default and continue
+        await sb.from('profiles').update({ calorie_goal: 2000 }).eq('id', currentUser.id);
+        currentProfile.calorie_goal = 2000;
+      }
+      loadTrainerApp();
+    } else {
+      loadClientApp();
+    }
+  } catch(e) {
+    console.error('loadProfile error:', e);
+    goTo('screen-welcome');
   }
 }
 
@@ -1201,15 +1212,20 @@ async function finishOnboarding() {
 
 // ══════════ CLIENT APP ══════════
 async function loadClientApp() {
-  goTo('screen-client');
-  updateClientGreeting();
-  updateDashboardStats();
-  loadWaterTracker();
-  loadFoodLog();
-  loadClientPlansWithDays();
-  updateClientProfile();
-  generateAIInsight();
-  checkWeeklyWeightPrompt();
+  try {
+    goTo('screen-client');
+    updateClientGreeting();
+    await updateDashboardStats();
+    loadWaterTracker();
+    loadFoodLog();
+    loadClientPlansWithDays();
+    updateClientProfile();
+    generateAIInsight();
+    checkWeeklyWeightPrompt();
+  } catch(e) {
+    console.error('loadClientApp error:', e);
+    showToast('Error loading app. Please refresh.');
+  }
 }
 
 function updateClientGreeting() {
@@ -1464,7 +1480,12 @@ async function loadClientMessages() {
   const trainerId = currentProfile.trainer_id;
   const { data: trainerProfile } = await sb.from('profiles').select('full_name').eq('id', trainerId).single();
   document.getElementById('c-msg-trainer-label').textContent = trainerProfile?.full_name || 'Your trainer';
-  const { data: msgs } = await sb.from('messages').select('*').or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${trainerId}),and(sender_id.eq.${trainerId},receiver_id.eq.${currentUser.id})`).order('created_at');
+
+  // Fetch all messages and filter client side to avoid OR syntax issues
+  const { data: sent } = await sb.from('messages').select('*').eq('sender_id', currentUser.id).eq('receiver_id', trainerId);
+  const { data: received } = await sb.from('messages').select('*').eq('sender_id', trainerId).eq('receiver_id', currentUser.id);
+  const msgs = [...(sent||[]), ...(received||[])].sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+
   const container = document.getElementById('clientMsgList');
   if (!msgs || msgs.length === 0) {
     container.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">No messages yet.<br>Send your trainer a message below.</div>';
@@ -1501,19 +1522,28 @@ async function sendClientMessage() {
 
 // ══════════ TRAINER APP ══════════
 async function loadTrainerApp() {
-  goTo('screen-trainer');
-  updateTrainerProfile();
-  loadTrainerClients();
+  try {
+    goTo('screen-trainer');
+    updateTrainerProfile();
+    await loadTrainerClients();
+  } catch(e) {
+    console.error('loadTrainerApp error:', e);
+    showToast('Error loading app. Please refresh.');
+  }
 }
 
 function updateTrainerProfile() {
   if (!currentProfile) return;
   const name = currentProfile.full_name || 'Trainer';
   const initial = name.charAt(0).toUpperCase();
-  document.getElementById('trainerAvatarInitial').textContent = initial;
-  document.getElementById('trainerProfileName').textContent = name;
-  document.getElementById('trainerSpeciality').textContent = currentProfile.speciality || 'Not set';
-  document.getElementById('trainerCert').textContent = currentProfile.certification || 'Not set';
+  const el1 = document.getElementById('trainerAvatarInitial');
+  const el2 = document.getElementById('trainerProfileName');
+  const el3 = document.getElementById('trainerSpeciality');
+  const el4 = document.getElementById('trainerCert');
+  if (el1) el1.textContent = initial;
+  if (el2) el2.textContent = name;
+  if (el3) el3.textContent = currentProfile.speciality || 'Not set';
+  if (el4) el4.textContent = currentProfile.certification || 'Not set';
 }
 
 async function loadTrainerClients() {
@@ -2430,8 +2460,9 @@ async function loadTrainerMessages() {
 
 async function openClientMessages(clientId, clientName) {
   selectedClient = { id: clientId, name: clientName };
-  const { data: msgs } = await sb.from('messages').select('*').or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`).order('created_at');
-  const filtered = (msgs || []).filter(m => (m.sender_id === clientId && m.receiver_id === currentUser.id) || (m.sender_id === currentUser.id && m.receiver_id === clientId));
+  const { data: sent } = await sb.from('messages').select('*').eq('sender_id', currentUser.id).eq('receiver_id', clientId);
+  const { data: received } = await sb.from('messages').select('*').eq('sender_id', clientId).eq('receiver_id', currentUser.id);
+  const filtered = [...(sent||[]), ...(received||[])].sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
   const container = document.getElementById('trainerMsgList');
   let html = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:0 4px;">
     <button onclick="loadTrainerMessages()" style="background:#1E1E1B;border:none;color:#C9B99A;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:6px 12px;border-radius:8px;display:flex;align-items:center;gap:4px;"><i class="ti ti-arrow-left"></i> Back</button>
