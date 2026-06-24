@@ -90,9 +90,9 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 
 /* NAV */
 .bottom-nav{display:flex;background:#111110;padding:8px 14px 24px;gap:6px;flex-shrink:0;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:8px 4px;color:#5A5A52;font-size:9px;letter-spacing:0.05em;text-transform:uppercase;border:none;background:#1E1E1B;border-radius:12px;font-family:'DM Sans',sans-serif;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:6px 2px;color:#5A5A52;font-size:8px;letter-spacing:0.03em;text-transform:uppercase;border:none;background:#1E1E1B;border-radius:10px;font-family:'DM Sans',sans-serif;}
 .nav-btn.active{background:#2A2A26;color:#C9B99A;}
-.nav-btn i{font-size:22px;}
+.nav-btn i{font-size:18px;}
 .notif-wrap{position:relative;display:inline-flex;}
 .notif-dot{position:absolute;top:-2px;right:-3px;width:7px;height:7px;background:#B54040;border-radius:50%;border:1.5px solid #1E1E1B;}
 
@@ -642,9 +642,10 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
     </div>
 
     <div class="bottom-nav">
-      <button class="nav-btn active" id="cnav-dashboard" onclick="showClientTab('dashboard')"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></button>
-      <button class="nav-btn" id="cnav-log" onclick="showClientTab('log')"><i class="ti ti-camera"></i><span>Log food</span></button>
-      <button class="nav-btn" id="cnav-plan" onclick="showClientTab('plan')"><i class="ti ti-clipboard-list"></i><span>My plan</span></button>
+      <button class="nav-btn active" id="cnav-dashboard" onclick="showClientTab('dashboard')"><i class="ti ti-layout-dashboard"></i><span>Home</span></button>
+      <button class="nav-btn" id="cnav-log" onclick="showClientTab('log')"><i class="ti ti-camera"></i><span>Log</span></button>
+      <button class="nav-btn" id="cnav-plan" onclick="showClientTab('plan')"><i class="ti ti-clipboard-list"></i><span>Plan</span></button>
+      <button class="nav-btn" id="cnav-messages" onclick="showClientTab('messages')"><div class="notif-wrap"><i class="ti ti-message-circle"></i></div><span>Messages</span></button>
       <button class="nav-btn" id="cnav-history" onclick="showClientTab('history')"><i class="ti ti-calendar"></i><span>History</span></button>
       <button class="nav-btn" id="cnav-profile" onclick="showClientTab('profile')"><i class="ti ti-user"></i><span>Profile</span></button>
     </div>
