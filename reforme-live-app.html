@@ -363,7 +363,11 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
     </div>
     <div class="ob-row">
       <div><div class="field-label" id="weight-label">Weight (kg)</div><input class="field" type="number" id="ob-weight" placeholder="75" oninput="calcTDEE()"></div>
-      <div><div class="field-label" id="height-label">Height (cm)</div><input class="field" type="number" id="ob-height" placeholder="175" oninput="calcTDEE()"></div>
+      <div>
+        <div class="field-label" id="height-label">Height (cm)</div>
+        <input class="field" type="number" id="ob-height" placeholder="175" oninput="calcTDEE()">
+        <div id="height-hint" style="font-size:10px;color:#5A5A52;margin-top:-10px;margin-bottom:10px;display:none;">Enter as decimal e.g. 5.8 = 5 feet 8 inches</div>
+      </div>
     </div>
     <div class="field-label">Activity level</div>
     <select class="field" id="ob-activity" onchange="calcTDEE()">
@@ -522,36 +526,82 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 
     <!-- MY PLAN -->
     <div class="screen" id="c-plan">
-      <div class="page-header"><div class="page-title">My plan</div><div class="page-sub" id="plan-trainer-label">From your trainer</div></div>
+      <div class="page-header"><div class="page-title">My plan</div><div class="page-sub" id="plan-day-label">Today</div></div>
       <div class="scroll">
+        <!-- DAY TABS -->
+        <div style="display:flex;gap:4px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px;" id="clientDayTabs"></div>
         <div class="switcher">
-          <button class="sw-btn active" id="cMealBtn" onclick="showCPlan('meal')">Meal plan</button>
-          <button class="sw-btn" id="cWorkBtn" onclick="showCPlan('workout')">Workout plan</button>
+          <button class="sw-btn active" id="cMealBtn" onclick="showCPlan('meal')">🍽️ Meals</button>
+          <button class="sw-btn" id="cWorkBtn" onclick="showCPlan('workout')">💪 Workout</button>
         </div>
-        <div id="cMealView">
-          <div class="empty-plan">
-            <div class="empty-plan-icon">📋</div>
-            <div class="empty-plan-title">Loading your plan...</div>
-            <div class="empty-plan-sub">Please wait</div>
-          </div>
-        </div>
-        <div id="cWorkView" style="display:none;">
-          <div class="empty-plan">
-            <div class="empty-plan-icon">💪</div>
-            <div class="empty-plan-title">Loading your plan...</div>
-            <div class="empty-plan-sub">Please wait</div>
-          </div>
-        </div>
+        <div id="cMealView"><div class="empty-plan"><div class="empty-plan-icon">📋</div><div class="empty-plan-title">Loading...</div></div></div>
+        <div id="cWorkView" style="display:none;"><div class="empty-plan"><div class="empty-plan-icon">💪</div><div class="empty-plan-title">Loading...</div></div></div>
       </div>
     </div>
 
-    <!-- MESSAGES -->
-    <div class="screen" id="c-messages">
+    <!-- HISTORY -->
+    <div class="screen" id="c-history">
+      <div class="page-header"><div class="page-title">History</div><div class="page-sub">Your past logs</div></div>
+      <div class="scroll" id="historyContent">
+        <div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">Loading your history...</div>
+      </div>
+    </div>
+
+    <!-- EDIT PROFILE MODAL SCREEN -->
+    <div class="screen" id="c-edit-profile">
+      <div class="status-bar">
+        <button onclick="showClientTab('profile')" style="background:none;border:none;color:#C9B99A;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;"><i class="ti ti-arrow-left"></i> Back</button>
+        <span class="logo" style="font-size:15px;">Edit profile</span>
+        <div style="width:60px;"></div>
+      </div>
+      <div class="scroll">
+        <div style="margin-bottom:14px;">
+          <div class="field-label">Full name</div>
+          <input class="field" type="text" id="editProfileName" placeholder="Your name">
+        </div>
+        <div class="ob-row" style="margin-bottom:14px;">
+          <div><div class="field-label">Weight (kg)</div><input class="field" type="number" id="editProfileWeight" placeholder="75"></div>
+          <div><div class="field-label">Height (cm)</div><input class="field" type="number" id="editProfileHeight" placeholder="175"></div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <div class="field-label">Age</div>
+          <input class="field" type="number" id="editProfileAge" placeholder="28">
+        </div>
+        <div style="margin-bottom:14px;">
+          <div class="field-label">Goal</div>
+          <select class="field" id="editProfileGoal">
+            <option value="lose">Lose weight</option>
+            <option value="muscle">Build muscle</option>
+            <option value="maintain">Maintain</option>
+            <option value="health">Get healthier</option>
+          </select>
+        </div>
+        <div style="margin-bottom:14px;">
+          <div class="field-label">Activity level</div>
+          <select class="field" id="editProfileActivity">
+            <option value="1.2">Sedentary</option>
+            <option value="1.375">Light (1–3 days/week)</option>
+            <option value="1.55">Moderate (3–5 days/week)</option>
+            <option value="1.725">Active (6–7 days/week)</option>
+            <option value="1.9">Very active</option>
+          </select>
+        </div>
+        <div style="margin-bottom:14px;">
+          <div class="field-label">Gender</div>
+          <select class="field" id="editProfileGender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+        <button class="btn-p" onclick="saveEditProfile()">Save changes</button>
+      </div>
+    </div>
       <div class="page-header"><div class="page-title">Messages</div><div class="page-sub" id="c-msg-trainer-label">Your trainer</div></div>
       <div class="scroll" id="clientMsgList">
         <div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">Loading messages...</div>
       </div>
       <div class="msg-input-row">
+        <button onclick="openModal('mediaMessageModal')" style="background:#1E1E1B;border:none;border-radius:10px;padding:10px 12px;color:#C9B99A;cursor:pointer;font-size:18px;flex-shrink:0;"><i class="ti ti-paperclip"></i></button>
         <input class="msg-input" type="text" id="clientMsgInput" placeholder="Message your trainer...">
         <button class="btn-p" style="width:auto;padding:10px 16px;" onclick="sendClientMessage()"><i class="ti ti-send"></i></button>
       </div>
@@ -575,12 +625,16 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
         <div class="p-role" id="clientProfileRole">Client</div>
       </div>
       <div style="overflow-y:auto;flex:1;">
-        <div class="setting-row"><i class="ti ti-weight" style="font-size:17px;color:#2D6A4F;"></i><span class="setting-label">Weight</span><span class="setting-val" id="profileWeightSetting">Not set</span><i class="ti ti-chevron-right" style="color:#A0A090;"></i></div>
-        <div class="setting-row"><i class="ti ti-ruler" style="font-size:17px;color:#2C5F8A;"></i><span class="setting-label">Height</span><span class="setting-val" id="profileHeightSetting">Not set</span><i class="ti ti-chevron-right" style="color:#A0A090;"></i></div>
-        <div class="setting-row"><i class="ti ti-target" style="font-size:17px;color:#C17D3C;"></i><span class="setting-label">Goal</span><span class="setting-val" id="profileGoalSetting">Not set</span><i class="ti ti-chevron-right" style="color:#A0A090;"></i></div>
-        <div class="setting-row"><i class="ti ti-activity" style="font-size:17px;color:#5C4A8A;"></i><span class="setting-label">Daily calorie target</span><span class="setting-val" id="profileCalTarget">Not calculated</span><i class="ti ti-chevron-right" style="color:#A0A090;"></i></div>
-        <div class="setting-row"><i class="ti ti-watch" style="font-size:17px;color:#5C4A8A;"></i><span class="setting-label">Connected devices</span><span class="setting-val">None yet</span><i class="ti ti-chevron-right" style="color:#A0A090;"></i></div>
-        <div class="setting-row"><i class="ti ti-credit-card" style="font-size:17px;color:#2D6A4F;"></i><span class="setting-label">Subscription</span><span class="setting-val">Trial</span><i class="ti ti-chevron-right" style="color:#A0A090;"></i></div>
+        <div style="background:#1E1E1B;border-radius:12px;margin:12px 16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:13px;color:#7A7A6E;">Want to update your stats?</div>
+          <button onclick="openEditProfile()" style="background:#2D6A4F;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">Edit profile</button>
+        </div>
+        <div class="setting-row"><i class="ti ti-weight" style="font-size:17px;color:#2D6A4F;"></i><span class="setting-label">Weight</span><span class="setting-val" id="profileWeightSetting">Not set</span></div>
+        <div class="setting-row"><i class="ti ti-ruler" style="font-size:17px;color:#2C5F8A;"></i><span class="setting-label">Height</span><span class="setting-val" id="profileHeightSetting">Not set</span></div>
+        <div class="setting-row"><i class="ti ti-target" style="font-size:17px;color:#C17D3C;"></i><span class="setting-label">Goal</span><span class="setting-val" id="profileGoalSetting">Not set</span></div>
+        <div class="setting-row"><i class="ti ti-activity" style="font-size:17px;color:#5C4A8A;"></i><span class="setting-label">Daily calorie target</span><span class="setting-val" id="profileCalTarget">Not calculated</span></div>
+        <div class="setting-row"><i class="ti ti-watch" style="font-size:17px;color:#5C4A8A;"></i><span class="setting-label">Connected devices</span><span class="setting-val">None yet</span></div>
+        <div class="setting-row"><i class="ti ti-credit-card" style="font-size:17px;color:#2D6A4F;"></i><span class="setting-label">Subscription</span><span class="setting-val">Trial</span></div>
         <div class="setting-row" onclick="handleSignOut()"><i class="ti ti-logout" style="font-size:17px;color:#B54040;"></i><span class="setting-label" style="color:#B54040;">Sign out</span></div>
       </div>
     </div>
@@ -589,7 +643,7 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
       <button class="nav-btn active" id="cnav-dashboard" onclick="showClientTab('dashboard')"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></button>
       <button class="nav-btn" id="cnav-log" onclick="showClientTab('log')"><i class="ti ti-camera"></i><span>Log food</span></button>
       <button class="nav-btn" id="cnav-plan" onclick="showClientTab('plan')"><i class="ti ti-clipboard-list"></i><span>My plan</span></button>
-      <button class="nav-btn" id="cnav-messages" onclick="showClientTab('messages')"><div class="notif-wrap"><i class="ti ti-message-circle"></i></div><span>Messages</span></button>
+      <button class="nav-btn" id="cnav-history" onclick="showClientTab('history')"><i class="ti ti-calendar"></i><span>History</span></button>
       <button class="nav-btn" id="cnav-profile" onclick="showClientTab('profile')"><i class="ti ti-user"></i><span>Profile</span></button>
     </div>
   </div>
@@ -638,6 +692,7 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
         <div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">No messages yet. Start a conversation from a client's profile.</div>
       </div>
       <div class="msg-input-row">
+        <button onclick="openModal('mediaMessageModal')" style="background:#1E1E1B;border:none;border-radius:10px;padding:10px 12px;color:#C9B99A;cursor:pointer;font-size:18px;flex-shrink:0;"><i class="ti ti-paperclip"></i></button>
         <input class="msg-input" type="text" id="trainerMsgInput" placeholder="Type a message...">
         <button class="btn-p" style="width:auto;padding:10px 16px;" onclick="sendTrainerMessage()"><i class="ti ti-send"></i></button>
       </div>
@@ -669,10 +724,19 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
       </div>
     </div>
 
+    <div class="screen" id="t-history">
+      <div class="page-header"><div class="page-title">History</div><div class="page-sub" id="t-history-client-label">Select a client</div></div>
+      <div class="scroll" id="tHistoryContent">
+        <div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Select client to view history</div>
+        <div class="card" style="padding:6px 12px;" id="tHistoryClientList"></div>
+      </div>
+    </div>
+
     <div class="bottom-nav">
       <button class="nav-btn active" id="tnav-clients" onclick="showTrainerTab('clients')"><i class="ti ti-users"></i><span>Clients</span></button>
       <button class="nav-btn" id="tnav-plans" onclick="showTrainerTab('plans')"><i class="ti ti-clipboard-list"></i><span>Plans</span></button>
       <button class="nav-btn" id="tnav-messages" onclick="showTrainerTab('messages')"><div class="notif-wrap"><i class="ti ti-message-circle"></i></div><span>Messages</span></button>
+      <button class="nav-btn" id="tnav-history" onclick="showTrainerTab('history')"><i class="ti ti-calendar"></i><span>History</span></button>
       <button class="nav-btn" id="tnav-profile" onclick="showTrainerTab('profile')"><i class="ti ti-user"></i><span>Profile</span></button>
     </div>
   </div>
@@ -833,6 +897,51 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 
 <!-- ══════════ MODALS ══════════ -->
 
+<!-- WEEKLY WEIGHT CHECK-IN MODAL -->
+<div class="modal-overlay" id="weightCheckInModal">
+  <div class="modal">
+    <div style="text-align:center;font-size:32px;margin-bottom:10px;">⚖️</div>
+    <div class="modal-title" style="text-align:center;">Weekly check-in</div>
+    <div style="font-size:13px;color:#7A7A6E;text-align:center;margin-bottom:16px;line-height:1.6;">Time to update your weight. This helps your trainer track your progress accurately.</div>
+    <div class="field-label">Current weight (kg)</div>
+    <input class="modal-field" id="checkInWeight" type="number" placeholder="e.g. 75.5">
+    <div class="field-label" style="margin-top:8px;">How are you feeling this week?</div>
+    <select class="modal-field" id="checkInFeeling" style="background:#111110;color:#E8E4DC;">
+      <option value="great">💪 Great — feeling strong</option>
+      <option value="good">😊 Good — on track</option>
+      <option value="okay">😐 Okay — some struggles</option>
+      <option value="tough">😓 Tough week</option>
+    </select>
+    <div class="modal-row" style="margin-top:12px;">
+      <button class="modal-btn-s" onclick="closeModal('weightCheckInModal')">Remind me later</button>
+      <button class="modal-btn-p" onclick="saveWeightCheckIn()">Save check-in</button>
+    </div>
+  </div>
+</div>
+
+<!-- MEDIA MESSAGE MODAL (UI ONLY - COMING SOON) -->
+<div class="modal-overlay" id="mediaMessageModal">
+  <div class="modal">
+    <div class="modal-title">Send media</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div style="background:#111110;border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;" onclick="showToast('Photo messages coming soon!')">
+        <div style="font-size:28px;margin-bottom:6px;">📷</div>
+        <div style="font-size:11px;color:#7A7A6E;">Photo</div>
+      </div>
+      <div style="background:#111110;border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;" onclick="showToast('Video messages coming soon!')">
+        <div style="font-size:28px;margin-bottom:6px;">🎥</div>
+        <div style="font-size:11px;color:#7A7A6E;">Video</div>
+      </div>
+      <div style="background:#111110;border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;" onclick="showToast('Voice messages coming soon!')">
+        <div style="font-size:28px;margin-bottom:6px;">🎙️</div>
+        <div style="font-size:11px;color:#7A7A6E;">Voice</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:#3A3A36;text-align:center;margin-bottom:14px;">Photo, video and voice messages are coming in the next update.</div>
+    <button class="modal-btn-s" style="width:100%;" onclick="closeModal('mediaMessageModal')">Close</button>
+  </div>
+</div>
+
 <!-- EDIT FOOD MODAL -->
 <div class="modal-overlay" id="editFoodModal">
   <div class="modal">
@@ -984,26 +1093,57 @@ function selectGoal(g) {
   });
 }
 
+let currentUnit = 'metric';
+
 function setUnit(u) {
+  currentUnit = u;
   document.getElementById('unit-metric').className = 'unit-btn' + (u === 'metric' ? ' active' : '');
   document.getElementById('unit-imperial').className = 'unit-btn' + (u === 'imperial' ? ' active' : '');
   document.getElementById('weight-label').textContent = u === 'metric' ? 'Weight (kg)' : 'Weight (lbs)';
   document.getElementById('height-label').textContent = u === 'metric' ? 'Height (cm)' : 'Height (ft)';
+  document.getElementById('ob-weight').placeholder = u === 'metric' ? '75' : '165';
+  document.getElementById('ob-height').placeholder = u === 'metric' ? '175' : '5.8';
+  const hint = document.getElementById('height-hint');
+  if (hint) hint.style.display = u === 'imperial' ? 'block' : 'none';
+  calcTDEE();
+}
+
+function convertToMetric(w, h) {
+  let weightKg = w;
+  let heightCm = h;
+  if (currentUnit === 'imperial') {
+    weightKg = w * 0.453592; // lbs to kg
+    // Height entered as decimal feet e.g. 5.8 means 5 feet 8 inches
+    const feet = Math.floor(h);
+    const inches = Math.round((h - feet) * 10); // 5.8 → 8 inches
+    heightCm = (feet * 30.48) + (inches * 2.54);
+  }
+  return { weightKg: Math.round(weightKg * 10) / 10, heightCm: Math.round(heightCm) };
 }
 
 function calcTDEE() {
-  const w = parseFloat(document.getElementById('ob-weight').value);
-  const h = parseFloat(document.getElementById('ob-height').value);
+  const wRaw = parseFloat(document.getElementById('ob-weight').value);
+  const hRaw = parseFloat(document.getElementById('ob-height').value);
   const a = parseFloat(document.getElementById('ob-age').value) || 25;
   const act = parseFloat(document.getElementById('ob-activity').value);
   const gender = document.getElementById('ob-gender').value;
-  if (!w || !h) return;
+  if (!wRaw || !hRaw) return;
+  const { weightKg: w, heightCm: h } = convertToMetric(wRaw, hRaw);
   let bmr = gender === 'male' ? 10*w + 6.25*h - 5*a + 5 : 10*w + 6.25*h - 5*a - 161;
   let tdee = Math.round(bmr * act);
   let adj = selectedGoalVal === 'lose' ? tdee - 500 : selectedGoalVal === 'muscle' ? tdee + 300 : tdee;
-  document.getElementById('tdee-result').style.display = 'block';
-  document.getElementById('tdee-num').textContent = adj.toLocaleString();
-  document.getElementById('tdee-desc').textContent = selectedGoalVal === 'lose' ? '500 kcal deficit for fat loss' : selectedGoalVal === 'muscle' ? '300 kcal surplus for muscle gain' : 'Maintenance calories';
+  const resultEl = document.getElementById('tdee-result');
+  if (resultEl) {
+    resultEl.style.display = 'block';
+    document.getElementById('tdee-num').textContent = adj.toLocaleString();
+    document.getElementById('tdee-desc').textContent = selectedGoalVal === 'lose' ? '500 kcal deficit for fat loss' : selectedGoalVal === 'muscle' ? '300 kcal surplus for muscle gain' : 'Maintenance calories';
+  }
+  // Show converted values hint
+  if (currentUnit === 'imperial') {
+    resultEl.querySelector && (resultEl.innerHTML = resultEl.innerHTML);
+    const hint = document.getElementById('unit-hint');
+    if (hint) hint.textContent = `(${w}kg · ${h}cm)`;
+  }
 }
 
 async function finishOnboarding() {
@@ -1013,11 +1153,21 @@ async function finishOnboarding() {
   let updateData = { id: currentUser.id, role: selectedUserType };
 
   if (selectedUserType === 'client') {
-    const w = parseFloat(document.getElementById('ob-weight').value) || null;
-    const h = parseFloat(document.getElementById('ob-height').value) || null;
+    const wRaw = parseFloat(document.getElementById('ob-weight').value) || null;
+    const hRaw = parseFloat(document.getElementById('ob-height').value) || null;
     const a = parseInt(document.getElementById('ob-age').value) || null;
     const act = parseFloat(document.getElementById('ob-activity').value) || 1.55;
     const gender = document.getElementById('ob-gender').value || 'male';
+
+    // Convert to metric if needed
+    let w = wRaw;
+    let h = hRaw;
+    if (wRaw && hRaw && currentUnit === 'imperial') {
+      const converted = convertToMetric(wRaw, hRaw);
+      w = converted.weightKg;
+      h = converted.heightCm;
+    }
+
     let calorieGoal = 1800;
     if (w && h && a) {
       let bmr = gender === 'male' ? 10*w + 6.25*h - 5*a + 5 : 10*w + 6.25*h - 5*a - 161;
@@ -1056,9 +1206,10 @@ async function loadClientApp() {
   updateDashboardStats();
   loadWaterTracker();
   loadFoodLog();
-  loadClientPlans();
+  loadClientPlansWithDays();
   updateClientProfile();
   generateAIInsight();
+  checkWeeklyWeightPrompt();
 }
 
 function updateClientGreeting() {
@@ -1291,56 +1442,9 @@ async function deleteFood(id) {
 }
 
 // ══════════ PLAN ══════════
-function showCPlan(t) {
-  document.getElementById('cMealView').style.display = t === 'meal' ? 'block' : 'none';
-  document.getElementById('cWorkView').style.display = t === 'workout' ? 'block' : 'none';
-  document.getElementById('cMealBtn').className = 'sw-btn' + (t === 'meal' ? ' active' : '');
-  document.getElementById('cWorkBtn').className = 'sw-btn' + (t === 'workout' ? ' active' : '');
-}
-
 async function loadClientPlans() {
-  const { data: mealPlans } = await sb.from('meal_plans').select('*').eq('client_id', currentUser.id).order('created_at');
-  const { data: workoutPlans } = await sb.from('workout_plans').select('*').eq('client_id', currentUser.id).order('created_at');
-  const mealContainer = document.getElementById('cMealView');
-  const workContainer = document.getElementById('cWorkView');
-  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎' };
-
-  if (!mealPlans || mealPlans.length === 0) {
-    mealContainer.innerHTML = '<div class="empty-plan"><div class="empty-plan-icon">📋</div><div class="empty-plan-title">No meal plan yet</div><div class="empty-plan-sub">Your trainer will send your meal plan here soon.</div></div>';
-  } else {
-    let html = '<div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">From your trainer</div>';
-    mealPlans.forEach(plan => {
-      const emoji = mealEmojis[plan.meal_type] || '🍽️';
-      html += `<div class="plan-item" onclick="toggleClientPlan(this,'meal_plans','${plan.id}')">
-        <div class="plan-check ${plan.completed ? 'done' : ''}">
-          ${plan.completed ? '<i class="ti ti-check" style="font-size:11px;"></i>' : ''}
-        </div>
-        <div>
-          <div class="plan-text-main">${emoji} ${plan.meal_type ? plan.meal_type.charAt(0).toUpperCase() + plan.meal_type.slice(1) + ' — ' : ''}${plan.description}</div>
-          <div class="plan-detail">~${plan.calories || 0} kcal · ${plan.protein || 0}g protein</div>
-        </div>
-      </div>`;
-    });
-    mealContainer.innerHTML = html;
-  }
-
-  if (!workoutPlans || workoutPlans.length === 0) {
-    workContainer.innerHTML = '<div class="empty-plan"><div class="empty-plan-icon">💪</div><div class="empty-plan-title">No workout plan yet</div><div class="empty-plan-sub">Your trainer will send your workout plan here soon.</div></div>';
-  } else {
-    let html = '<div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">From your trainer</div>';
-    workoutPlans.forEach(plan => {
-      html += `<div class="plan-item" onclick="toggleClientPlan(this,'workout_plans','${plan.id}')">
-        <div class="plan-check ${plan.completed ? 'done' : ''}">
-          ${plan.completed ? '<i class="ti ti-check" style="font-size:11px;"></i>' : ''}
-        </div>
-        <div>
-          <div class="plan-text-main">${plan.exercise_name} — ${plan.sets}×${plan.reps}</div>
-          <div class="plan-detail">${plan.weight_kg ? plan.weight_kg + 'kg · ' : ''}Rest ${plan.rest_seconds || 60}s</div>
-        </div>
-      </div>`;
-    });
-    workContainer.innerHTML = html;
-  }
+  // Redirect to new day-based plan loader
+  await loadClientPlansWithDays();
 }
 
 async function toggleClientPlan(el, table, id) {
@@ -1548,6 +1652,10 @@ async function openClientDetail(clientId, clientName, avatarColor) {
         <div style="font-size:12px;font-weight:600;color:#1A1A18;margin-bottom:8px;">Today's food log</div>
         ${foodHtml}
       </div>
+      <div style="background:#1E1E1B;border-radius:12px;padding:12px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:600;color:#E8E4DC;margin-bottom:8px;">Today's workout</div>
+        <div style="font-size:12px;color:#5A5A52;" id="clientDetailWorkout">Loading...</div>
+      </div>
       <div style="display:flex;gap:8px;">
         <button class="btn-p" style="flex:1;" onclick="showTrainerTab('messages');setTimeout(()=>openClientMessages('${clientId}','${clientName}'),100)"><i class="ti ti-message-circle"></i> Message</button>
         <button class="btn-s" style="flex:1;" onclick="showTrainerTab('plans');setTimeout(()=>openClientPlan('${clientId}','${clientName}'),100)"><i class="ti ti-edit"></i> Edit plan</button>
@@ -1560,6 +1668,26 @@ async function openClientDetail(clientId, clientName, avatarColor) {
   document.getElementById('t-detail').classList.add('active');
   document.querySelectorAll('#screen-trainer .nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tnav-clients').classList.add('active');
+
+  // Load today's workout for this client
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const todayName = dayNames[new Date().getDay()];
+  const { data: workouts } = await sb.from('workout_plans').select('*').eq('client_id', clientId).eq('day_label', todayName);
+  const workoutEl = document.getElementById('clientDetailWorkout');
+  if (workoutEl) {
+    if (!workouts || workouts.length === 0) {
+      workoutEl.innerHTML = '<span style="color:#5A5A52;">No workout scheduled for today</span>';
+    } else {
+      const typeLabels = { push:'Push Day 💪', pull:'Pull Day 🏋️', legs:'Leg Day 🦵', fullbody:'Full Body 🔥' };
+      const dayType = workouts[0]?.day_type;
+      workoutEl.innerHTML = `
+        ${dayType ? `<div style="font-size:11px;color:#2D6A4F;margin-bottom:8px;">${typeLabels[dayType]||dayType}</div>` : ''}
+        ${workouts.map(w => `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid #2A2A26;font-size:12px;">
+          <span style="color:#E8E4DC;">${w.exercise_name} ${w.completed?'✓':''}</span>
+          <span style="color:#5A5A52;">${w.sets}×${w.reps}${w.weight_kg?' · '+w.weight_kg+'kg':''}</span>
+        </div>`).join('')}`;
+    }
+  }
 }
 
 // ══════════ INVITE ══════════
@@ -1593,25 +1721,341 @@ function goTo(screenId) {
   if (el) el.classList.add('active');
 }
 
+// ══════════ SHOW CLIENT TAB (UPDATED) ══════════
 function showClientTab(tab) {
   document.querySelectorAll('#screen-client .screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('c-' + tab).classList.add('active');
+  const el = document.getElementById('c-' + tab);
+  if (el) el.classList.add('active');
   document.querySelectorAll('#screen-client .nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('cnav-' + tab).classList.add('active');
+  const navEl = document.getElementById('cnav-' + tab);
+  if (navEl) navEl.classList.add('active');
   if (tab === 'log') loadFoodLog();
   if (tab === 'dashboard') { updateDashboardStats(); generateAIInsight(); }
-  if (tab === 'plan') loadClientPlans();
+  if (tab === 'plan') loadClientPlansWithDays();
   if (tab === 'messages') loadClientMessages();
+  if (tab === 'history') loadClientHistory();
 }
+
+// ══════════ CLIENT PLAN WITH DAYS ══════════
+let clientSelectedDay = null;
+let clientCurrentPlanTab = 'meal';
+
+async function loadClientPlansWithDays() {
+  const today = new Date();
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const todayName = dayNames[today.getDay()];
+  clientSelectedDay = clientSelectedDay || todayName;
+
+  // Update header
+  document.getElementById('plan-day-label').textContent = clientSelectedDay === todayName ? 'Today · ' + todayName : todayName;
+
+  // Build day tabs
+  const tabsContainer = document.getElementById('clientDayTabs');
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  tabsContainer.innerHTML = days.map(d => {
+    const isToday = d === todayName;
+    const isSelected = d === clientSelectedDay;
+    return `<button onclick="setClientDay('${d}')" style="flex-shrink:0;padding:7px 12px;border:none;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;background:${isSelected?'#2D6A4F':'#1E1E1B'};color:${isSelected?'#fff':isToday?'#C9B99A':'#5A5A52'};">${d.substring(0,3)}${isToday?' 📍':''}</button>`;
+  }).join('');
+
+  await loadClientPlanForDay();
+}
+
+function setClientDay(day) {
+  clientSelectedDay = day;
+  loadClientPlansWithDays();
+}
+
+async function loadClientPlanForDay() {
+  if (!clientSelectedDay) return;
+
+  // Load meal plans for this day
+  const { data: mealPlans } = await sb.from('meal_plans').select('*').eq('client_id', currentUser.id).eq('day_label', clientSelectedDay).order('created_at');
+
+  // Load workout plans for this day
+  const { data: workoutPlans } = await sb.from('workout_plans').select('*').eq('client_id', currentUser.id).eq('day_label', clientSelectedDay).order('created_at');
+
+  // Load today's food logs to cross-reference
+  const today = new Date().toISOString().split('T')[0];
+  const { data: todayLogs } = await sb.from('food_logs').select('*').eq('user_id', currentUser.id).gte('logged_at', today);
+
+  const mealContainer = document.getElementById('cMealView');
+  const workContainer = document.getElementById('cWorkView');
+  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎' };
+
+  // MEAL VIEW
+  if (!mealPlans || mealPlans.length === 0) {
+    mealContainer.innerHTML = '<div class="empty-plan"><div class="empty-plan-icon">📋</div><div class="empty-plan-title">No meal plan for ' + clientSelectedDay + '</div><div class="empty-plan-sub">Your trainer hasn\'t set meals for this day yet.</div></div>';
+  } else {
+    let html = `<div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">${clientSelectedDay} · Planned meals</div>`;
+    mealPlans.forEach(plan => {
+      const emoji = mealEmojis[plan.meal_type] || '🍽️';
+      // Check if client logged something for this meal type today
+      const logged = (todayLogs || []).find(l => l.meal_type === plan.meal_type);
+      const isLogged = !!logged;
+      const isDifferent = isLogged && logged.food_name.toLowerCase() !== plan.description.toLowerCase();
+
+      let statusHtml = '';
+      if (isLogged && isDifferent) {
+        statusHtml = `<div style="margin-top:6px;background:#FAF0E4;border-radius:8px;padding:6px 10px;font-size:11px;color:#C17D3C;">
+          Had instead: ${logged.food_name} (${logged.calories} kcal)
+        </div>`;
+      } else if (isLogged) {
+        statusHtml = `<div style="margin-top:4px;font-size:11px;color:#2D6A4F;">✓ Logged and matches plan</div>`;
+      }
+
+      html += `<div class="plan-item" onclick="toggleClientPlan(this,'meal_plans','${plan.id}')" style="flex-direction:column;align-items:flex-start;">
+        <div style="display:flex;align-items:flex-start;gap:10px;width:100%;">
+          <div class="plan-check ${plan.completed || isLogged ? 'done' : ''}">
+            ${plan.completed || isLogged ? '<i class="ti ti-check" style="font-size:11px;"></i>' : ''}
+          </div>
+          <div style="flex:1;">
+            <div class="plan-text-main">${emoji} ${plan.meal_type ? plan.meal_type.charAt(0).toUpperCase()+plan.meal_type.slice(1)+' — ':'' }${plan.description}</div>
+            <div class="plan-detail">~${plan.calories||0} kcal · ${plan.protein||0}g protein</div>
+          </div>
+        </div>
+        ${statusHtml}
+      </div>`;
+    });
+    mealContainer.innerHTML = html;
+  }
+
+  // WORKOUT VIEW
+  if (!workoutPlans || workoutPlans.length === 0) {
+    workContainer.innerHTML = '<div class="empty-plan"><div class="empty-plan-icon">💪</div><div class="empty-plan-title">No workout for ' + clientSelectedDay + '</div><div class="empty-plan-sub">Your trainer hasn\'t set a workout for this day yet.</div></div>';
+  } else {
+    const dayType = workoutPlans[0]?.day_type;
+    const typeLabels = { push:'Push Day 💪', pull:'Pull Day 🏋️', legs:'Leg Day 🦵', fullbody:'Full Body 🔥' };
+    let html = `
+      ${dayType ? `<div style="background:#1A2A1F;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#2D6A4F;font-weight:500;">${typeLabels[dayType] || dayType}</div>` : ''}
+      <div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">${clientSelectedDay} · ${workoutPlans.length} exercises</div>`;
+    workoutPlans.forEach(plan => {
+      html += `<div class="plan-item" onclick="toggleClientPlan(this,'workout_plans','${plan.id}')">
+        <div class="plan-check ${plan.completed ? 'done' : ''}">
+          ${plan.completed ? '<i class="ti ti-check" style="font-size:11px;"></i>' : ''}
+        </div>
+        <div style="flex:1;">
+          <div class="plan-text-main">${plan.exercise_name}</div>
+          <div class="plan-detail">${plan.sets} sets × ${plan.reps} reps${plan.weight_kg ? ' · '+plan.weight_kg+'kg' : ''} · Rest ${plan.rest_seconds||60}s</div>
+        </div>
+      </div>`;
+    });
+    workContainer.innerHTML = html;
+  }
+}
+
+function showCPlan(t) {
+  clientCurrentPlanTab = t;
+  document.getElementById('cMealView').style.display = t === 'meal' ? 'block' : 'none';
+  document.getElementById('cWorkView').style.display = t === 'workout' ? 'block' : 'none';
+  document.getElementById('cMealBtn').className = 'sw-btn' + (t === 'meal' ? ' active' : '');
+  document.getElementById('cWorkBtn').className = 'sw-btn' + (t === 'workout' ? ' active' : '');
+}
+
+// ══════════ CLIENT HISTORY ══════════
+async function loadClientHistory() {
+  const container = document.getElementById('historyContent');
+  container.innerHTML = '<div style="text-align:center;padding:20px;color:#5A5A52;font-size:13px;">Loading...</div>';
+
+  // Get last 14 days
+  const days = [];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+
+  const startDate = days[days.length - 1];
+  const { data: logs } = await sb.from('food_logs').select('*').eq('user_id', currentUser.id).gte('logged_at', startDate).order('logged_at', { ascending: false });
+
+  const { data: checkins } = await sb.from('body_checkins').select('*').eq('user_id', currentUser.id).gte('checkin_date', startDate).order('checkin_date', { ascending: false });
+
+  let html = '<div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;">Last 14 days</div>';
+
+  days.forEach(dateStr => {
+    const dayLogs = (logs || []).filter(l => l.logged_at.startsWith(dateStr));
+    const checkin = (checkins || []).find(c => c.checkin_date === dateStr);
+    const totalCal = dayLogs.reduce((s, l) => s + (l.calories || 0), 0);
+    const date = new Date(dateStr);
+    const dayName = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    const isToday = dateStr === new Date().toISOString().split('T')[0];
+
+    if (dayLogs.length === 0 && !checkin) return;
+
+    html += `<div style="background:#1E1E1B;border-radius:12px;padding:14px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${dayLogs.length>0?'10px':'0'};">
+        <div style="font-size:13px;font-weight:500;color:#E8E4DC;">${isToday?'Today':dayName}</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          ${checkin ? `<span style="font-size:11px;color:#C9B99A;background:#2A2418;padding:3px 8px;border-radius:20px;">⚖️ ${checkin.weight}kg</span>` : ''}
+          ${totalCal > 0 ? `<span style="font-size:12px;font-weight:500;color:#C17D3C;">${totalCal.toLocaleString()} kcal</span>` : ''}
+        </div>
+      </div>
+      ${dayLogs.map(log => `
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #2A2A26;font-size:12px;">
+          <span style="color:#A0A090;">${log.food_name}</span>
+          <span style="color:#5A5A52;">${log.calories} kcal</span>
+        </div>
+      `).join('')}
+    </div>`;
+  });
+
+  if (html === '<div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;">Last 14 days</div>') {
+    html += '<div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">No history yet.<br>Start logging your meals to see your history here.</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+// ══════════ TRAINER HISTORY ══════════
+async function loadTrainerHistory() {
+  const { data: clients } = await sb.from('profiles').select('*').eq('trainer_id', currentUser.id);
+  const listEl = document.getElementById('tHistoryClientList');
+  if (!clients || clients.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#5A5A52;font-size:13px;">No clients yet.</div>';
+    return;
+  }
+  const colors = ['#2D6A4F','#C17D3C','#5C4A8A','#2C5F8A','#B54040'];
+  listEl.innerHTML = clients.map((c, i) => `
+    <div class="client-item" onclick="loadClientHistoryForTrainer('${c.id}','${c.full_name||'Client'}')">
+      <div class="c-avatar" style="background:${colors[i%colors.length]};">${(c.full_name||'U').substring(0,2).toUpperCase()}</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:#1A1A18;">${c.full_name||'Unknown'}</div><div style="font-size:11px;color:#5C5C52;margin-top:1px;">Tap to view history</div></div>
+      <i class="ti ti-chevron-right" style="color:#A0A090;font-size:16px;"></i>
+    </div>`).join('');
+}
+
+async function loadClientHistoryForTrainer(clientId, clientName) {
+  document.getElementById('t-history-client-label').textContent = clientName;
+  const container = document.getElementById('tHistoryContent');
+  container.innerHTML = `
+    <button onclick="loadTrainerHistory()" style="background:#1E1E1B;border:none;color:#C9B99A;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:6px 12px;border-radius:8px;display:flex;align-items:center;gap:4px;margin-bottom:14px;"><i class="ti ti-arrow-left"></i> All clients</button>
+    <div style="text-align:center;padding:20px;color:#5A5A52;font-size:13px;">Loading...</div>`;
+
+  const days = [];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+  const startDate = days[days.length - 1];
+  const { data: logs } = await sb.from('food_logs').select('*').eq('user_id', clientId).gte('logged_at', startDate).order('logged_at', { ascending: false });
+  const { data: checkins } = await sb.from('body_checkins').select('*').eq('user_id', clientId).gte('checkin_date', startDate).order('checkin_date', { ascending: false });
+
+  let html = `
+    <button onclick="loadTrainerHistory()" style="background:#1E1E1B;border:none;color:#C9B99A;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:6px 12px;border-radius:8px;display:flex;align-items:center;gap:4px;margin-bottom:14px;"><i class="ti ti-arrow-left"></i> All clients</button>
+    <div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;">${clientName} · Last 14 days</div>`;
+
+  let hasData = false;
+  days.forEach(dateStr => {
+    const dayLogs = (logs || []).filter(l => l.logged_at.startsWith(dateStr));
+    const checkin = (checkins || []).find(c => c.checkin_date === dateStr);
+    const totalCal = dayLogs.reduce((s, l) => s + (l.calories || 0), 0);
+    const date = new Date(dateStr);
+    const dayName = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    const isToday = dateStr === new Date().toISOString().split('T')[0];
+    if (dayLogs.length === 0 && !checkin) return;
+    hasData = true;
+    html += `<div style="background:#1E1E1B;border-radius:12px;padding:14px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${dayLogs.length>0?'10px':'0'};">
+        <div style="font-size:13px;font-weight:500;color:#E8E4DC;">${isToday?'Today':dayName}</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          ${checkin ? `<span style="font-size:11px;color:#C9B99A;background:#2A2418;padding:3px 8px;border-radius:20px;">⚖️ ${checkin.weight}kg</span>` : ''}
+          ${totalCal > 0 ? `<span style="font-size:12px;font-weight:500;color:#C17D3C;">${totalCal.toLocaleString()} kcal</span>` : '<span style="font-size:11px;color:#B54040;">No log</span>'}
+        </div>
+      </div>
+      ${dayLogs.map(log => `
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #2A2A26;font-size:12px;">
+          <span style="color:#A0A090;">${log.food_name}</span>
+          <span style="color:#5A5A52;">${log.calories} kcal</span>
+        </div>`).join('')}
+    </div>`;
+  });
+
+  if (!hasData) html += '<div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">No activity logged in the last 14 days.</div>';
+  container.innerHTML = html;
+}
+
+// ══════════ EDIT PROFILE ══════════
+function openEditProfile() {
+  if (!currentProfile) return;
+  document.getElementById('editProfileName').value = currentProfile.full_name || '';
+  document.getElementById('editProfileWeight').value = currentProfile.weight || '';
+  document.getElementById('editProfileHeight').value = currentProfile.height || '';
+  document.getElementById('editProfileAge').value = currentProfile.age || '';
+  document.getElementById('editProfileGoal').value = currentProfile.goal || 'lose';
+  document.getElementById('editProfileActivity').value = currentProfile.activity_level || '1.55';
+  document.getElementById('editProfileGender').value = currentProfile.gender || 'male';
+  showClientTab('edit-profile');
+}
+
+async function saveEditProfile() {
+  const wRaw = parseFloat(document.getElementById('editProfileWeight').value) || null;
+  const hRaw = parseFloat(document.getElementById('editProfileHeight').value) || null;
+  const a = parseInt(document.getElementById('editProfileAge').value) || null;
+  const goal = document.getElementById('editProfileGoal').value;
+  const activity = parseFloat(document.getElementById('editProfileActivity').value);
+  const gender = document.getElementById('editProfileGender').value;
+  const name = document.getElementById('editProfileName').value.trim();
+
+  // Always store in metric — edit profile always uses kg/cm
+  const w = wRaw;
+  const h = hRaw;
+
+  let calorieGoal = currentProfile?.calorie_goal || 1800;
+  if (w && h && a) {
+    let bmr = gender === 'male' ? 10*w + 6.25*h - 5*a + 5 : 10*w + 6.25*h - 5*a - 161;
+    calorieGoal = goal === 'lose' ? Math.round(bmr * activity) - 500 : goal === 'muscle' ? Math.round(bmr * activity) + 300 : Math.round(bmr * activity);
+  }
+
+  const { error } = await sb.from('profiles').update({
+    full_name: name, weight: w, height: h, age: a,
+    goal, activity_level: activity, gender, calorie_goal: calorieGoal
+  }).eq('id', currentUser.id);
+
+  if (error) { showToast('Error saving. Try again.'); return; }
+  currentProfile = { ...currentProfile, full_name: name, weight: w, height: h, age: a, goal, activity_level: activity, gender, calorie_goal: calorieGoal };
+  updateClientProfile();
+  showToast('✓ Profile updated');
+  showClientTab('profile');
+}
+
+// ══════════ WEIGHT CHECK-IN ══════════
+async function checkWeeklyWeightPrompt() {
+  if (!currentProfile || currentProfile.role === 'trainer') return;
+  const today = new Date();
+  if (today.getDay() !== 0) return; // Only on Sundays
+  const lastCheckIn = localStorage.getItem('lastWeightCheckIn');
+  const todayStr = today.toISOString().split('T')[0];
+  if (lastCheckIn === todayStr) return;
+  setTimeout(() => openModal('weightCheckInModal'), 2000);
+}
+
+async function saveWeightCheckIn() {
+  const weight = parseFloat(document.getElementById('checkInWeight').value);
+  if (!weight) { showToast('Please enter your weight'); return; }
+  const today = new Date().toISOString().split('T')[0];
+  await sb.from('body_checkins').upsert({ user_id: currentUser.id, weight, checkin_date: today });
+  await sb.from('profiles').update({ weight }).eq('id', currentUser.id);
+  currentProfile.weight = weight;
+  localStorage.setItem('lastWeightCheckIn', today);
+  closeModal('weightCheckInModal');
+  showToast('✓ Weight updated — ' + weight + 'kg');
+  updateDashboardStats();
+  updateClientProfile();
+}
+
+// ══════════ SHOW TRAINER TAB (UPDATED) ══════════
 
 function showTrainerTab(tab) {
   document.querySelectorAll('#screen-trainer .screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('t-' + tab).classList.add('active');
+  const el = document.getElementById('t-' + tab);
+  if (el) el.classList.add('active');
   document.querySelectorAll('#screen-trainer .nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tnav-' + tab).classList.add('active');
+  const navEl = document.getElementById('tnav-' + tab);
+  if (navEl) navEl.classList.add('active');
+  else if (tab === 'detail') { const c = document.getElementById('tnav-clients'); if(c) c.classList.add('active'); }
   if (tab === 'clients') loadTrainerClients();
   if (tab === 'plans') loadTrainerPlans();
   if (tab === 'messages') loadTrainerMessages();
+  if (tab === 'history') loadTrainerHistory();
 }
 
 let selectedClient = null;
