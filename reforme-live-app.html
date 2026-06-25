@@ -3413,22 +3413,28 @@ async function checkDailyReminders() {
 let supabaseReady = false;
 
 function waitForSupabase(callback) {
+  // If Supabase already loaded, go immediately
+  if (typeof supabase !== 'undefined' && supabase.createClient) {
+    try {
+      sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      });
+    } catch(e) { console.error('SB init error:', e); }
+    callback();
+    return;
+  }
+  // Otherwise wait up to 3 seconds
   let attempts = 0;
   const check = () => {
     attempts++;
     if (typeof supabase !== 'undefined' && supabase.createClient) {
       try {
-        const { createClient } = supabase;
-        sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
           auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
         });
-      } catch(e) {
-        console.error('Supabase createClient error:', e);
-      }
+      } catch(e) { console.error('SB init error:', e); }
       callback();
-    } else if (attempts > 50) {
-      // Give up after 5 seconds and show welcome screen
-      console.error('Supabase failed to load after 5 seconds');
+    } else if (attempts > 30) {
       document.getElementById('loadingScreen').style.display = 'none';
       document.getElementById('mainApp').style.display = 'flex';
       goTo('screen-welcome');
