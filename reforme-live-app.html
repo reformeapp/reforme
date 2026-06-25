@@ -1098,13 +1098,32 @@ let editingFoodId = null;
 
 // ══════════ INIT ══════════
 async function init() {
-  const { data: { session } } = await sb.auth.getSession();
-  document.getElementById('loadingScreen').style.display = 'none';
-  document.getElementById('mainApp').style.display = 'flex';
-  if (session) {
-    currentUser = session.user;
-    await loadProfile();
-  } else {
+  try {
+    if (!sb) {
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'flex';
+      goTo('screen-welcome');
+      showToast('Connection error. Check your internet.');
+      return;
+    }
+    const { data: { session }, error } = await sb.auth.getSession();
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'flex';
+    if (error) {
+      console.error('Session error:', error);
+      goTo('screen-welcome');
+      return;
+    }
+    if (session) {
+      currentUser = session.user;
+      await loadProfile();
+    } else {
+      goTo('screen-welcome');
+    }
+  } catch(e) {
+    console.error('Init error:', e);
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'flex';
     goTo('screen-welcome');
   }
 }
@@ -1149,17 +1168,26 @@ async function handleLogin() {
   if (!email || !password) { err.textContent = 'Please fill in all fields'; err.classList.add('show'); return; }
   btn.disabled = true;
   btn.textContent = 'Signing in...';
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) {
-    err.textContent = 'Invalid email or password';
+  err.classList.remove('show');
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      err.textContent = error.message.includes('Invalid') ? 'Invalid email or password' : error.message;
+      err.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Sign in';
+      return;
+    }
+    currentUser = data.user;
+    await checkPendingInvite();
+    await loadProfile();
+  } catch(e) {
+    console.error('Login error:', e);
+    err.textContent = 'Connection error. Check your internet and try again.';
     err.classList.add('show');
     btn.disabled = false;
     btn.textContent = 'Sign in';
-    return;
   }
-  currentUser = data.user;
-  await checkPendingInvite();
-  await loadProfile();
 }
 
 async function handleSignup() {
@@ -1907,19 +1935,25 @@ function updateTrainerProfile() {
 }
 
 async function loadTrainerClients() {
-  const { data: clients } = await sb.from('profiles').select('*').eq('trainer_id', currentUser.id);
+  const { data: clients, error } = await sb.from('profiles').select('*').eq('trainer_id', currentUser.id);
+  if (error) { console.error('loadTrainerClients error:', error); return; }
   const clientList = clients || [];
-  document.getElementById('totalClients').textContent = clientList.length;
-  document.getElementById('trainerClientsLabel').textContent = currentProfile?.full_name?.split(' ')[0] + ' · ' + clientList.length + ' active clients';
+  const totalEl = document.getElementById('totalClients');
+  const labelEl = document.getElementById('trainerClientsLabel');
   const countEl = document.getElementById('trainerClientCount');
+  const onTrackEl = document.getElementById('onTrackCount');
+  const attnEl = document.getElementById('attentionCount');
+  if (totalEl) totalEl.textContent = clientList.length;
+  if (labelEl) labelEl.textContent = (currentProfile?.full_name?.split(' ')[0] || 'Coach') + ' · ' + clientList.length + ' active clients';
   if (countEl) countEl.textContent = clientList.length + ' clients';
   let onTrack = 0, attention = 0;
   const today = new Date().toISOString().split('T')[0];
   const container = document.getElementById('clientList');
+  if (!container) return;
   if (clientList.length === 0) {
     container.innerHTML = '<div style="text-align:center;padding:30px 20px;color:#5A5A52;font-size:13px;">No clients yet.<br>Tap + Invite to add your first client.</div>';
-    document.getElementById('onTrackCount').textContent = '0';
-    document.getElementById('attentionCount').textContent = '0';
+    if (onTrackEl) onTrackEl.textContent = '0';
+    if (attnEl) attnEl.textContent = '0';
     return;
   }
   const colors = ['#2D6A4F','#C17D3C','#5C4A8A','#2C5F8A','#B54040'];
@@ -1946,8 +1980,8 @@ async function loadTrainerClients() {
     </div>`;
   }
   container.innerHTML = html;
-  document.getElementById('onTrackCount').textContent = onTrack;
-  document.getElementById('attentionCount').textContent = attention;
+  if (onTrackEl) onTrackEl.textContent = onTrack;
+  if (attnEl) attnEl.textContent = attention;
 }
 
 async function openClientDetail(clientId, clientName, avatarColor) {
