@@ -2459,8 +2459,30 @@ function showHistoryTab(tab) {
 
 // ══════════ TRAINER HISTORY ══════════
 async function loadTrainerHistory() {
+  // Reset history screen to show client list
+  const container = document.getElementById('tHistoryContent');
+  if (container) {
+    container.innerHTML = `
+      <div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Select client to view history</div>
+      <div class="card" style="padding:6px 12px;" id="tHistoryClientList">
+        <div style="text-align:center;padding:20px;color:#5A5A52;font-size:13px;">Loading...</div>
+      </div>`;
+  }
+
+  // Make sure history tab is visible
+  document.querySelectorAll('#screen-trainer .screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const histEl = document.getElementById('t-history');
+  if (histEl) { histEl.classList.add('active'); histEl.style.display = 'flex'; }
+  document.querySelectorAll('#screen-trainer .nav-btn').forEach(b => b.classList.remove('active'));
+  const histNav = document.getElementById('tnav-history');
+  if (histNav) histNav.classList.add('active');
+
   const { data: clients } = await sb.from('profiles').select('*').eq('trainer_id', currentUser.id);
   const listEl = document.getElementById('tHistoryClientList');
+  if (!listEl) return;
   if (!clients || clients.length === 0) {
     listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#5A5A52;font-size:13px;">No clients yet.</div>';
     return;
