@@ -1092,24 +1092,29 @@ async function loadProfile() {
   try {
     const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
     if (error || !data) {
+      // No profile yet — send to onboarding
       goTo('screen-ob-goal');
       return;
     }
     currentProfile = data;
     if (!data.role) { goTo('screen-ob-goal'); return; }
-    if (data.role === 'client' && (!data.weight || !data.calorie_goal)) { goTo('screen-ob-goal'); return; }
+    if (data.role === 'client' && (!data.weight || !data.calorie_goal)) {
+      goTo('screen-ob-goal');
+      return;
+    }
     if (data.role === 'trainer') {
+      // Set default calorie_goal if missing — don't block on this
       if (!data.calorie_goal) {
-        // Trainer hasn't finished onboarding — set a default and continue
-        await sb.from('profiles').update({ calorie_goal: 2000 }).eq('id', currentUser.id);
         currentProfile.calorie_goal = 2000;
+        sb.from('profiles').update({ calorie_goal: 2000 }).eq('id', currentUser.id).then(() => {});
       }
-      loadTrainerApp();
+      await loadTrainerApp();
     } else {
-      loadClientApp();
+      await loadClientApp();
     }
   } catch(e) {
     console.error('loadProfile error:', e);
+    showToast('Connection error. Please refresh.');
     goTo('screen-welcome');
   }
 }
@@ -1745,12 +1750,11 @@ async function toggleClientPlan(el, table, id) {
   const newStatus = !isDone;
   check.className = 'plan-check' + (newStatus ? ' done' : '');
   check.innerHTML = newStatus ? '<i class="ti ti-check" style="font-size:11px;"></i>' : '';
-  await sb.from(table).update({ completed: newStatus }).eq('id', id);
-  // Refresh dashboard stats
-  if (document.getElementById('c-dashboard').classList.contains('active')) {
-    await updateDashboardStats();
-    generateAIInsight();
-  }
+  const { error } = await sb.from(table).update({ completed: newStatus }).eq('id', id);
+  if (error) { showToast('Error saving. Try again.'); return; }
+  // Always refresh dashboard stats in background
+  await updateDashboardStats();
+  generateAIInsight();
 }
 
 async function loadClientMessages() {
@@ -1875,12 +1879,18 @@ async function loadTrainerClients() {
 async function openClientDetail(clientId, clientName, avatarColor) {
   selectedClient = { id: clientId, name: clientName };
   const today = new Date().toISOString().split('T')[0];
+  const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
 
   // Load client profile
   const { data: profile } = await sb.from('profiles').select('*').eq('id', clientId).single();
 
   // Load today's food logs
   const { data: logs } = await sb.from('food_logs').select('*').eq('user_id', clientId).gte('logged_at', today).order('logged_at');
+
+  // Load today's meal plan completion
+  const { data: mealPlan } = await sb.from('meal_plans').select('*').eq('client_id', clientId).eq('day_label', dayName);
+  const totalMeals = (mealPlan || []).length;
+  const doneMeals = (mealPlan || []).filter(m => m.completed).length;
 
   const totalCal = (logs || []).reduce((s, l) => s + (l.calories || 0), 0);
   const totalProtein = (logs || []).reduce((s, l) => s + (l.protein || 0), 0);
@@ -1956,7 +1966,16 @@ async function openClientDetail(clientId, clientName, avatarColor) {
           <div style="height:3px;background:#111;border-radius:2px;margin-top:7px;overflow:hidden;"><div style="width:${proteinPct}%;height:100%;background:#2D6A4F;border-radius:2px;"></div></div>
         </div>
       </div>
-      ${profile?.weight ? `<div style="background:#1E1E1B;border-radius:12px;padding:12px;margin-bottom:10px;">${bmiHtml}<div style="font-size:11px;color:#5A5A52;margin-top:4px;">Goal: ${profile.goal || 'Not set'} · Activity: ${profile.activity_level || 'moderate'}</div></div>` : ''}
+      ${totalMeals > 0 ? `<div style="background:#1E1E1B;border-radius:12px;padding:12px;margin-bottom:10px;">
+        <div style="font-size:10px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:6px;">Meal plan today</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:22px;font-weight:400;color:${doneMeals===totalMeals?'#2D6A4F':'#fff'};font-family:'DM Serif Display',serif;">${doneMeals}/${totalMeals} meals checked</div>
+          ${doneMeals===totalMeals?'<span style="font-size:11px;color:#2D6A4F;background:#1A2A1F;padding:3px 10px;border-radius:20px;">✓ All done</span>':'<span style="font-size:11px;color:#C17D3C;background:#2A1A08;padding:3px 10px;border-radius:20px;">${totalMeals-doneMeals} remaining</span>'}
+        </div>
+        <div style="height:3px;background:#111;border-radius:2px;margin-top:8px;overflow:hidden;"><div style="width:${totalMeals>0?Math.round((doneMeals/totalMeals)*100):0}%;height:100%;background:#2D6A4F;border-radius:2px;"></div></div>
+        <div style="margin-top:8px;">${(mealPlan||[]).map(m=>`<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:11px;"><span style="color:${m.completed?'#2D6A4F':'#5A5A52'};">${m.completed?'✓':'○'}</span><span style="color:${m.completed?'#E8E4DC':'#5A5A52'};">${m.meal_type?m.meal_type.charAt(0).toUpperCase()+m.meal_type.slice(1)+' — ':''}${m.description}</span></div>`).join('')}</div>
+      </div>` : ''}
+      ${profile?.weight ? `<div style="background:#1E1E1B;border-radius:12px;padding:12px;margin-bottom:10px;">${bmiHtml}<div style="font-size:11px;color:#5A5A52;margin-top:4px;">Goal: ${profile.goal || 'Not set'}</div></div>` : ''}
       <div class="ai-card">
         <div class="ai-lbl">Reformé insight</div>
         <div class="ai-text">${insight}</div>
