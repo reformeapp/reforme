@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="supabaseReady=true"></script>
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-messaging-compat.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -1391,6 +1393,8 @@ async function loadClientApp() {
     updateClientProfile();
     generateAIInsight();
     checkWeeklyWeightPrompt();
+    // Init notifications
+    setTimeout(() => { initFirebase(); checkDailyReminders(); }, 2000);
   } catch(e) {
     console.error('loadClientApp error:', e);
     showToast('Error loading. Please refresh.');
@@ -1984,7 +1988,8 @@ async function loadTrainerApp() {
     const c = document.getElementById('clientList');
     if (c) c.innerHTML = '<div style="padding:20px;color:#B54040;font-size:13px;">Error: ' + e.message + '</div>';
   }
-}
+  // Init notifications
+  setTimeout(() => initFirebase(), 2000);
 
 function updateTrainerProfile() {
   if (!currentProfile) return;
@@ -3240,6 +3245,100 @@ async function checkPendingInvite() {
   const pendingTrainerId = localStorage.getItem('pendingTrainerId');
   if (pendingTrainerId && currentUser) {
     await connectToTrainer(pendingTrainerId);
+  }
+}
+
+// ══════════ FIREBASE NOTIFICATIONS ══════════
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBOxNjOZ0a5mR7xOdoShEX2tZhbIKA09-M",
+  authDomain: "reforme-3f82c.firebaseapp.com",
+  projectId: "reforme-3f82c",
+  storageBucket: "reforme-3f82c.firebasestorage.app",
+  messagingSenderId: "304977464183",
+  appId: "1:304977464183:web:f68313c6fdebc8ec1d6f72",
+  measurementId: "G-GYEQWV49HN"
+};
+const VAPID_KEY = "BLdjzhhu3UKd5JDmlIUqv4PVTr_GB3gri8CZvgP4zE9Ffu4XbCCNME_r9PZ09IYWdm7SrH1HWTfbweZxtW0VsMY";
+
+let fbMessaging = null;
+
+async function initFirebase() {
+  try {
+    if (typeof firebase === 'undefined') return;
+    if (!firebase.apps.length) {
+      firebase.initializeApp(FIREBASE_CONFIG);
+    }
+    fbMessaging = firebase.messaging();
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      console.log('Service worker registered:', reg);
+    }
+
+    // Request permission
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      const token = await fbMessaging.getToken({ vapidKey: VAPID_KEY });
+      if (token && currentUser) {
+        // Save FCM token to Supabase so we can send notifications to this device
+        await sb.from('profiles').update({ fcm_token: token }).eq('id', currentUser.id);
+        console.log('FCM token saved:', token.substring(0, 20) + '...');
+      }
+    }
+
+    // Handle foreground messages
+    fbMessaging.onMessage((payload) => {
+      console.log('Foreground message:', payload);
+      const { title, body } = payload.notification || {};
+      if (title) showNotificationToast(title, body);
+    });
+
+  } catch(e) {
+    console.error('Firebase init error:', e);
+  }
+}
+
+function showNotificationToast(title, body) {
+  const t = document.getElementById('toast');
+  t.textContent = '🔔 ' + title + (body ? ' — ' + body : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// Send notification to a specific user via Supabase Edge Function
+// For now we use a direct approach — schedule notifications via database
+async function scheduleNotification(userId, title, body, type) {
+  try {
+    await sb.from('notifications').insert({
+      user_id: userId,
+      title,
+      body,
+      type,
+      sent: false,
+      created_at: new Date().toISOString()
+    });
+  } catch(e) {
+    console.error('Schedule notification error:', e);
+  }
+}
+
+// Check and send daily reminder notifications
+async function checkDailyReminders() {
+  if (!currentProfile || currentProfile.role === 'trainer') return;
+  const hour = new Date().getHours();
+  if (hour < 8 || hour > 20) return; // Only send between 8am and 8pm
+
+  const today = new Date().toISOString().split('T')[0];
+  const { data: logs } = await sb.from('food_logs').select('id').eq('user_id', currentUser.id).gte('logged_at', today);
+
+  if (!logs || logs.length === 0) {
+    // Haven't logged today — show in-app reminder
+    if (hour >= 12 && hour <= 14) {
+      showNotificationToast("Don't forget to log lunch!", "Tap Log food to add your meal");
+    } else if (hour >= 18 && hour <= 20) {
+      showNotificationToast("Log your dinner", "Keep your streak going — log your meal now");
+    }
   }
 }
 
