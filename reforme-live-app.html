@@ -6,7 +6,7 @@
 <title>Reformé</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="supabaseReady=true"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -1071,22 +1071,10 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 </div>
 
 <script>
-// ══════════ SUPABASE INIT ══════════
+// ══════════ SUPABASE CONFIG ══════════
 const SUPABASE_URL = 'https://mzpvainvmhbpjyambwap.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cHZhaW52bWhicGp5YW1id2FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTI0NzIsImV4cCI6MjA5Nzg4ODQ3Mn0.evlBxIC8K-fplIrEIS8JsxMN8QSvmfr5q5r77JX-Gm0';
-let sb;
-try {
-  const { createClient } = supabase;
-  sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  });
-} catch(e) {
-  console.error('Supabase init error:', e);
-}
+let sb; // initialized in waitForSupabase()
 
 // ══════════ STATE ══════════
 let currentUser = null;
@@ -1856,9 +1844,9 @@ async function toggleClientPlan(el, table, id) {
           .eq('food_name', planItem.description)
           .gte('logged_at', today);
         if (!existing || existing.length === 0) {
-          const cal = planItem.calories || 0;
-          const prot = planItem.protein || 0;
-          await sb.from('food_logs').insert({
+          const cal = parseInt(planItem.calories) || 0;
+          const prot = parseInt(planItem.protein) || 0;
+          const { error: insertErr } = await sb.from('food_logs').insert({
             user_id: currentUser.id,
             food_name: planItem.description || 'Planned meal',
             calories: cal,
@@ -1867,7 +1855,11 @@ async function toggleClientPlan(el, table, id) {
             fat: 0,
             meal_type: planItem.meal_type || 'snack'
           });
-          if (cal > 0) showToast('✓ ' + (planItem.description || 'Meal') + ' logged — ' + cal + ' kcal');
+          if (!insertErr) {
+            showToast('✓ ' + (planItem.description || 'Meal') + ' logged' + (cal > 0 ? ' — ' + cal + ' kcal' : ''));
+          } else {
+            console.error('Food log insert error:', insertErr);
+          }
         }
       } else {
         // Uncheck — remove from food log
@@ -3171,14 +3163,33 @@ async function checkPendingInvite() {
 }
 
 // ══════════ START ══════════
-window.addEventListener('load', async () => {
-  // Check for invite code in URL before init
+let supabaseReady = false;
+
+function waitForSupabase(callback) {
+  if (typeof supabase !== 'undefined' && supabase.createClient) {
+    // Init Supabase client
+    try {
+      const { createClient } = supabase;
+      sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      });
+    } catch(e) {
+      console.error('Supabase createClient error:', e);
+    }
+    callback();
+  } else {
+    setTimeout(() => waitForSupabase(callback), 100);
+  }
+}
+
+window.addEventListener('load', () => {
   const params = new URLSearchParams(window.location.search);
   const trainerId = params.get('trainer');
-  if (trainerId) {
-    localStorage.setItem('pendingTrainerId', trainerId);
-  }
-  await init();
+  if (trainerId) localStorage.setItem('pendingTrainerId', trainerId);
+
+  waitForSupabase(async () => {
+    await init();
+  });
 });
 </script>
 </body>
