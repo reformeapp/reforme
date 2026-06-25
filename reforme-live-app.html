@@ -17,24 +17,20 @@
 html,body{height:100%;overflow:hidden;}
 body{font-family:'DM Sans',sans-serif;background:#000;}
 
-/* APP SHELL */
 .app{height:100vh;display:flex;flex-direction:column;overflow:hidden;background:#000;max-width:430px;margin:0 auto;position:relative;}
 .app::before{content:'';position:fixed;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(201,185,154,0.08) 0%,transparent 60%);pointer-events:none;z-index:0;}
 .app::after{content:'';position:fixed;bottom:50px;right:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(201,185,154,0.05) 0%,transparent 60%);pointer-events:none;z-index:0;}
 .screen{display:none;flex-direction:column;height:100%;overflow:hidden;position:relative;z-index:1;}
 .screen.active{display:flex;}
 
-/* TOAST */
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(201,185,154,0.15);backdrop-filter:blur(10px);border:0.5px solid rgba(201,185,154,0.3);color:#C9B99A;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;}
 
-/* LOADING */
 .loading-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
 .loading-logo{font-family:'DM Serif Display',serif;font-size:48px;color:#C9B99A;letter-spacing:0.06em;margin-bottom:20px;}
 .loading-spinner{width:24px;height:24px;border:1.5px solid rgba(201,185,154,0.2);border-top-color:#C9B99A;border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* AUTH */
 .auth-screen{flex:1;display:flex;flex-direction:column;padding:32px 24px 24px;overflow-y:auto;background:#000;-webkit-overflow-scrolling:touch;min-height:0;}
 .auth-logo{font-family:'DM Serif Display',serif;font-size:38px;color:#C9B99A;letter-spacing:0.06em;margin-bottom:4px;}
 .auth-tagline{font-size:11px;color:var(--text3);margin-bottom:24px;text-transform:uppercase;letter-spacing:0.08em;}
@@ -54,7 +50,6 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .error-msg{background:rgba(181,64,64,0.15);border:0.5px solid rgba(181,64,64,0.3);border-radius:10px;padding:10px 14px;font-size:13px;color:#B54040;margin-bottom:14px;display:none;}
 .error-msg.show{display:block;}
 
-/* TYPE SELECT */
 .type-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
 .type-card{background:var(--glass);border-radius:16px;padding:24px 14px;text-align:center;cursor:pointer;border:0.5px solid var(--glass-border);}
 .type-card.selected{border-color:#C9B99A;background:rgba(201,185,154,0.1);}
@@ -62,7 +57,6 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .type-name{font-size:15px;font-weight:500;color:#fff;margin-bottom:4px;}
 .type-desc{font-size:11px;color:var(--text2);line-height:1.4;}
 
-/* ONBOARDING */
 .ob-screen{flex:1;display:flex;flex-direction:column;padding:48px 24px 32px;overflow-y:auto;background:#000;}
 .ob-progress{display:flex;gap:6px;margin-bottom:32px;}
 .ob-dot{flex:1;height:2px;border-radius:2px;background:rgba(201,185,154,0.1);}
@@ -82,7 +76,6 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .unit-btn.active{background:rgba(201,185,154,0.15);color:#C9B99A;}
 .tdee-result{display:none;background:rgba(201,185,154,0.08);border:0.5px solid var(--glass-border);border-radius:12px;padding:14px;margin-bottom:14px;}
 
-/* MAIN APP LAYOUT */
 .app-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .logo{font-family:'DM Serif Display',serif;font-size:18px;color:#C9B99A;letter-spacing:0.06em;}
 .page-header{background:transparent;padding:6px 20px 14px;flex-shrink:0;}
@@ -90,7 +83,6 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .page-sub{font-size:11px;color:var(--text3);margin-top:3px;letter-spacing:0.04em;text-transform:uppercase;}
 .scroll{flex:1;overflow-y:auto;padding:14px 20px;-webkit-overflow-scrolling:touch;}
 
-/* NAV */
 .bottom-nav{display:flex;background:rgba(0,0,0,0.8);padding:8px 12px 24px;gap:5px;flex-shrink:0;border-top:0.5px solid rgba(201,185,154,0.08);}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:7px 2px;color:var(--text3);font-size:8px;letter-spacing:0.03em;text-transform:uppercase;border:none;background:transparent;border-radius:10px;font-family:'DM Sans',sans-serif;}
 .nav-btn.active{background:rgba(201,185,154,0.1);color:#C9B99A;border:0.5px solid rgba(201,185,154,0.2);}
@@ -98,11 +90,9 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .notif-wrap{position:relative;display:inline-flex;}
 .notif-dot{position:absolute;top:-2px;right:-3px;width:7px;height:7px;background:#B54040;border-radius:50%;border:1.5px solid #000;}
 
-/* GLASS CARD — replaces .card and .card-dark */
 .card{background:var(--glass);border-radius:14px;padding:14px;margin-bottom:10px;border:0.5px solid var(--glass-border);}
 .card-dark{background:var(--glass);border-radius:14px;padding:14px;margin-bottom:10px;border:0.5px solid var(--glass-border);}
 
-/* HERO CALORIE */
 .cal-hero{background:var(--glass);border-radius:16px;padding:20px 18px 16px;margin-bottom:10px;position:relative;border:0.5px solid var(--glass-border);}
 .hero-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:2px;}
 .hero-num{font-family:'DM Serif Display',serif;font-size:64px;font-weight:400;color:#fff;line-height:1;}
@@ -123,12 +113,10 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .streak-num{font-family:'DM Serif Display',serif;font-size:20px;color:#C17D3C;}
 .streak-text{font-size:11px;color:var(--text2);}
 
-/* WATER */
 .water-glasses{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
 .wglass{width:32px;height:32px;border-radius:8px;border:0.5px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;background:transparent;transition:background 0.15s;}
 .wglass.filled{background:rgba(44,95,138,0.2);border-color:rgba(44,95,138,0.35);}
 
-/* FOOD LOG */
 .food-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(201,185,154,0.08);}
 .food-item:last-child{border-bottom:none;}
 .food-emoji{width:44px;height:44px;border-radius:10px;background:rgba(201,185,154,0.08);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
@@ -139,17 +127,14 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .edit-btn{background:rgba(201,185,154,0.1);border:0.5px solid rgba(201,185,154,0.2);border-radius:6px;padding:5px 10px;font-size:11px;color:#C9B99A;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .delete-btn{background:rgba(181,64,64,0.1);border:none;border-radius:6px;padding:5px 8px;font-size:11px;color:#B54040;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:4px;}
 
-/* SNAP ZONE */
 .snap-zone{background:var(--glass);border-radius:14px;padding:24px 20px;text-align:center;margin-bottom:12px;border:0.5px dashed rgba(201,185,154,0.2);}
 .snap-result{background:rgba(201,185,154,0.05);border-radius:12px;padding:16px;margin-top:12px;display:none;border:0.5px solid var(--glass-border);}
 .snap-result.show{display:block;}
 
-/* LOG METHODS */
 .log-methods{display:flex;gap:8px;margin-bottom:14px;}
 .log-method{flex:1;padding:10px 6px;background:var(--glass);border:0.5px solid var(--glass-border);border-radius:10px;font-size:11px;color:#C9B99A;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;gap:4px;}
 .log-method i{font-size:20px;}
 
-/* PLAN */
 .switcher{display:flex;background:var(--glass);border-radius:10px;padding:3px;margin-bottom:14px;border:0.5px solid var(--glass-border);}
 .sw-btn{flex:1;padding:7px;border:none;background:transparent;border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;}
 .sw-btn.active{background:rgba(201,185,154,0.15);color:#C9B99A;}
@@ -163,7 +148,6 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .empty-plan-title{font-size:15px;font-weight:500;color:#fff;margin-bottom:6px;}
 .empty-plan-sub{font-size:13px;color:var(--text2);line-height:1.6;}
 
-/* PROFILE */
 .profile-header{background:transparent;padding:24px 20px 16px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
 .p-avatar{width:72px;height:72px;border-radius:50%;background:rgba(201,185,154,0.15);border:1px solid rgba(201,185,154,0.3);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:600;color:#C9B99A;margin-bottom:10px;font-family:'DM Serif Display',serif;}
 .p-name{font-size:18px;font-weight:400;color:#fff;font-family:'DM Serif Display',serif;}
@@ -172,29 +156,24 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .setting-label{flex:1;font-size:14px;color:var(--text);}
 .setting-val{font-size:13px;color:var(--text2);}
 
-/* TAGS */
 .tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;}
 .tag-g{background:rgba(45,106,79,0.2);color:#2D6A4F;border:0.5px solid rgba(45,106,79,0.3);}
 .tag-r{background:rgba(181,64,64,0.15);color:#B54040;border:0.5px solid rgba(181,64,64,0.2);}
 .tag-o{background:rgba(193,125,60,0.15);color:#C17D3C;border:0.5px solid rgba(193,125,60,0.2);}
 
-/* CLIENT LIST */
 .client-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid rgba(201,185,154,0.08);cursor:pointer;}
 .client-item:last-child{border-bottom:none;}
 .c-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0;}
 
-/* STATS */
 .stats-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1px;background:rgba(201,185,154,0.08);border-radius:12px;overflow:hidden;margin-bottom:10px;}
 .stat-box{background:#000;padding:12px 6px;text-align:center;}
 .stat-val{font-size:15px;font-weight:500;color:#fff;font-family:'DM Serif Display',serif;}
 .stat-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px;}
 
-/* AI CARD */
 .ai-card{background:var(--glass);border-radius:12px;padding:14px;margin-bottom:10px;border:0.5px solid var(--glass-border);}
 .ai-lbl{font-size:9px;color:#C9B99A;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;}
 .ai-text{font-size:12px;color:var(--text2);line-height:1.6;}
 
-/* MESSAGES */
 .msg-item{display:flex;gap:10px;margin-bottom:12px;}
 .msg-avatar{width:32px;height:32px;border-radius:50%;background:rgba(45,106,79,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0;}
 .msg-bubble{background:var(--glass);border-radius:12px;border-top-left-radius:4px;padding:10px 12px;flex:1;border:0.5px solid var(--glass-border);}
@@ -208,7 +187,6 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .msg-input-row{display:flex;gap:8px;padding:12px 20px;background:rgba(0,0,0,0.5);flex-shrink:0;border-top:0.5px solid rgba(201,185,154,0.08);}
 .msg-input{flex:1;padding:10px 14px;border-radius:10px;border:0.5px solid var(--glass-border);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--glass);color:#fff;outline:none;}
 
-/* MODAL */
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:none;align-items:flex-end;justify-content:center;z-index:100;max-width:430px;margin:0 auto;}
 .modal-overlay.show{display:flex;}
 .modal{background:#0A0A09;border:0.5px solid var(--glass-border);border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;}
@@ -220,18 +198,15 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .macro-fields{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px;}
 .macro-field-wrap .mf-label{font-size:10px;color:var(--text2);margin-bottom:4px;}
 
-/* INVITE */
 .invite-link-box{background:var(--glass);border-radius:10px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;border:0.5px solid var(--glass-border);}
 .invite-link-text{font-size:12px;color:#C9B99A;flex:1;word-break:break-all;line-height:1.5;}
 .copy-btn{background:#C9B99A;color:#000;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;}
 
-/* TRAINER STATS */
 .trainer-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
 .t-stat{background:var(--glass);border-radius:12px;padding:12px;text-align:center;border:0.5px solid var(--glass-border);}
 .t-stat-num{font-size:22px;font-weight:400;color:#fff;font-family:'DM Serif Display',serif;}
 .t-stat-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.03em;margin-top:2px;}
 
-/* PRICING */
 .pricing-card{background:var(--glass);border-radius:12px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border:0.5px solid var(--glass-border);}
 .pricing-card.current{border-color:#C9B99A;}
 .pricing-name{font-size:14px;font-weight:500;color:#fff;}
@@ -242,14 +217,12 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .next-tier-box{background:rgba(45,106,79,0.1);border:0.5px solid rgba(45,106,79,0.2);border-radius:10px;padding:10px 12px;margin-bottom:12px;}
 .next-tier-text{font-size:12px;color:#2D6A4F;line-height:1.5;}
 
-/* NOTIFICATION ITEMS */
 .notif-item{display:flex;gap:10px;padding:12px 0;border-bottom:0.5px solid rgba(201,185,154,0.08);}
 .notif-item:last-child{border-bottom:none;}
 .notif-icon-box{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .notif-text-main{font-size:13px;color:var(--text);line-height:1.4;}
 .notif-time-label{font-size:11px;color:var(--text3);margin-top:3px;}
 
-/* MANUAL LOG FORM */
 .manual-log-form{background:var(--glass);border-radius:12px;padding:14px;margin-bottom:12px;display:none;border:0.5px solid var(--glass-border);}
 .manual-log-form.show{display:block;}
 </style>
@@ -1075,12 +1048,10 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 </div>
 
 <script>
-// ══════════ SUPABASE CONFIG ══════════
 const SUPABASE_URL = 'https://mzpvainvmhbpjyambwap.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cHZhaW52bWhicGp5YW1id2FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTI0NzIsImV4cCI6MjA5Nzg4ODQ3Mn0.evlBxIC8K-fplIrEIS8JsxMN8QSvmfr5q5r77JX-Gm0';
-let sb; // initialized in waitForSupabase()
+let sb;
 
-// ══════════ STATE ══════════
 let currentUser = null;
 let currentProfile = null;
 let selectedGoalVal = 'lose';
@@ -1089,7 +1060,6 @@ let waterCount = 0;
 let todayFoodLogs = [];
 let editingFoodId = null;
 
-// ══════════ INIT ══════════
 async function init() {
   try {
     if (!sb) {
@@ -1125,7 +1095,6 @@ async function loadProfile() {
   try {
     const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
     if (error || !data) {
-      // No profile yet — send to onboarding
       goTo('screen-ob-goal');
       return;
     }
@@ -1136,7 +1105,6 @@ async function loadProfile() {
       return;
     }
     if (data.role === 'trainer') {
-      // Set default calorie_goal if missing — don't block on this
       if (!data.calorie_goal) {
         currentProfile.calorie_goal = 2000;
         sb.from('profiles').update({ calorie_goal: 2000 }).eq('id', currentUser.id).then(() => {});
@@ -1152,7 +1120,6 @@ async function loadProfile() {
   }
 }
 
-// ══════════ AUTH ══════════
 async function testConnection() {
   const err = document.getElementById('loginError');
   err.textContent = 'Testing connection...';
@@ -1243,7 +1210,6 @@ async function handleSignOut() {
   showToast('Signed out successfully');
 }
 
-// ══════════ ONBOARDING ══════════
 function selectUserType(t) {
   selectedUserType = t;
   document.getElementById('type-client').className = 'type-card' + (t === 'client' ? ' selected' : '');
@@ -1276,10 +1242,9 @@ function convertToMetric(w, h) {
   let weightKg = w;
   let heightCm = h;
   if (currentUnit === 'imperial') {
-    weightKg = w * 0.453592; // lbs to kg
-    // Height entered as decimal feet e.g. 5.8 means 5 feet 8 inches
+    weightKg = w * 0.453592;
     const feet = Math.floor(h);
-    const inches = Math.round((h - feet) * 10); // 5.8 → 8 inches
+    const inches = Math.round((h - feet) * 10);
     heightCm = (feet * 30.48) + (inches * 2.54);
   }
   return { weightKg: Math.round(weightKg * 10) / 10, heightCm: Math.round(heightCm) };
@@ -1302,7 +1267,6 @@ function calcTDEE() {
     document.getElementById('tdee-num').textContent = adj.toLocaleString();
     document.getElementById('tdee-desc').textContent = selectedGoalVal === 'lose' ? '500 kcal deficit for fat loss' : selectedGoalVal === 'muscle' ? '300 kcal surplus for muscle gain' : 'Maintenance calories';
   }
-  // Show converted values hint
   if (currentUnit === 'imperial') {
     resultEl.querySelector && (resultEl.innerHTML = resultEl.innerHTML);
     const hint = document.getElementById('unit-hint');
@@ -1323,7 +1287,6 @@ async function finishOnboarding() {
     const act = parseFloat(document.getElementById('ob-activity').value) || 1.55;
     const gender = document.getElementById('ob-gender').value || 'male';
 
-    // Convert to metric if needed
     let w = wRaw;
     let h = hRaw;
     if (wRaw && hRaw && currentUnit === 'imperial') {
@@ -1340,7 +1303,6 @@ async function finishOnboarding() {
     }
     updateData = { ...updateData, weight: w, height: h, age: a, gender: gender, goal: selectedGoalVal, activity_level: act, calorie_goal: calorieGoal };
   } else {
-    // Trainer — get speciality and experience
     const spec = document.getElementById('ob-speciality') ? document.getElementById('ob-speciality').value : null;
     const cert = document.getElementById('ob-cert') ? document.getElementById('ob-cert').value : null;
     const exp = document.getElementById('ob-exp') ? parseInt(document.getElementById('ob-exp').value) : null;
@@ -1350,7 +1312,6 @@ async function finishOnboarding() {
   const { error } = await sb.from('profiles').update(updateData).eq('id', currentUser.id);
   if (error) {
     console.error('Save error:', error);
-    // Try upsert as fallback
     const { error: e2 } = await sb.from('profiles').upsert(updateData);
     if (e2) {
       showToast('Error saving profile. Please try again.');
@@ -1358,15 +1319,12 @@ async function finishOnboarding() {
       return;
     }
   }
-  // Check if there's a pending trainer invite
   await checkPendingInvite();
   await loadProfile();
 }
 
-// ══════════ CLIENT APP ══════════
 async function loadClientApp() {
   try {
-    // Explicitly show client screen
     document.querySelectorAll('#mainApp > .screen').forEach(s => {
       s.style.display = 'none';
       s.classList.remove('active');
@@ -1374,7 +1332,6 @@ async function loadClientApp() {
     const clientScreen = document.getElementById('screen-client');
     if (clientScreen) { clientScreen.style.display = 'flex'; clientScreen.classList.add('active'); }
 
-    // Show dashboard tab
     document.querySelectorAll('#screen-client .screen').forEach(s => {
       s.style.display = 'none';
       s.classList.remove('active');
@@ -1394,7 +1351,6 @@ async function loadClientApp() {
     updateClientProfile();
     generateAIInsight();
     checkWeeklyWeightPrompt();
-    // Init notifications
     setTimeout(() => { initFirebase(); checkDailyReminders(); checkUnreadNotifications(); }, 2000);
   } catch(e) {
     console.error('loadClientApp error:', e);
@@ -1425,7 +1381,6 @@ async function updateDashboardStats() {
   const goal = currentProfile?.calorie_goal || 1800;
   const pct = Math.min(100, Math.round((totalCal / goal) * 100));
 
-  // Update calorie display
   const todayCalEl = document.getElementById('todayCal');
   const remCalEl = document.getElementById('remCal');
   const calGoalEl = document.getElementById('calGoalLabel');
@@ -1435,7 +1390,6 @@ async function updateDashboardStats() {
   if (calGoalEl) calGoalEl.textContent = 'Goal — ' + goal.toLocaleString() + ' kcal · Based on your stats';
   if (calBarEl) calBarEl.style.width = pct + '%';
 
-  // Update Actual vs Target card
   const proteinGoal = Math.round(goal * 0.3 / 4);
   const carbsGoal = Math.round(goal * 0.4 / 4);
   const fatGoal = Math.round(goal * 0.3 / 9);
@@ -1468,14 +1422,12 @@ async function updateDashboardStats() {
   if (cbEl) cbEl.style.width = Math.min(100, (totalCarbs/carbsGoal)*100) + '%';
   if (fbEl) fbEl.style.width = Math.min(100, (totalFat/fatGoal)*100) + '%';
 
-  // Streak
   const sNumEl = document.getElementById('streakNum');
   const sTxtEl = document.getElementById('streakText');
   const streak = todayFoodLogs.length > 0 ? 1 : 0;
   if (sNumEl) sNumEl.textContent = '🔥 ' + streak;
   if (sTxtEl) sTxtEl.textContent = streak > 0 ? 'day streak — keep it going!' : 'Start logging to build your streak!';
 
-  // Plan completion for today
   const { data: todayMeals } = await sb.from('meal_plans').select('*').eq('client_id', currentUser.id).eq('day_label', dayName);
   const { data: todayWorkouts } = await sb.from('workout_plans').select('*').eq('client_id', currentUser.id).eq('day_label', dayName);
   const totalMeals = (todayMeals || []).length;
@@ -1483,7 +1435,6 @@ async function updateDashboardStats() {
   const totalWorkouts = (todayWorkouts || []).length;
   const doneWorkouts = (todayWorkouts || []).filter(w => w.completed).length;
 
-  // Show plan progress on dashboard if plans exist
   const planProgressEl = document.getElementById('dashPlanProgress');
   if (planProgressEl) {
     if (totalMeals > 0 || totalWorkouts > 0) {
@@ -1506,7 +1457,6 @@ async function updateDashboardStats() {
     }
   }
 
-  // BMI
   if (currentProfile?.weight && currentProfile?.height) {
     const bmi = (currentProfile.weight / Math.pow(currentProfile.height / 100, 2)).toFixed(1);
     const status = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese';
@@ -1565,7 +1515,6 @@ function updateClientProfile() {
   if (cEl) cEl.textContent = currentProfile.calorie_goal ? currentProfile.calorie_goal.toLocaleString() + ' kcal / day' : 'Not calculated';
 }
 
-// ══════════ WATER TRACKER ══════════
 async function loadWaterTracker() {
   const today = new Date().toISOString().split('T')[0];
   const { data } = await sb.from('water_logs').select('*').eq('user_id', currentUser.id).eq('logged_date', today).single();
@@ -1593,7 +1542,6 @@ async function toggleWaterGlass(idx) {
   await sb.from('water_logs').upsert({ user_id: currentUser.id, glasses: waterCount, logged_date: today });
 }
 
-// ══════════ FOOD LOG ══════════
 async function loadFoodLog() {
   const today = new Date().toISOString().split('T')[0];
   const { data } = await sb.from('food_logs').select('*').eq('user_id', currentUser.id).gte('logged_at', today).order('logged_at', { ascending: true });
@@ -1636,7 +1584,6 @@ function renderFoodLog() {
   container.innerHTML = html;
 }
 
-// ══════════ SNAP DEMO DATA ══════════
 const SNAP_DEMO_MEALS = [
   {
     name: 'Grilled chicken with rice',
@@ -1676,7 +1623,6 @@ function renderSnapResult() {
   if (meal.type === 'complex') {
     document.getElementById('snapComplexView').style.display = 'block';
     document.getElementById('snapSimpleView').style.display = 'none';
-    // Set default values
     meal.ingredients.forEach((ing, i) => {
       const el = document.getElementById('ing' + i);
       if (el) el.value = ing.defaultG;
@@ -1842,9 +1788,7 @@ async function deleteFood(id) {
   await loadFoodLog();
 }
 
-// ══════════ PLAN ══════════
 async function loadClientPlans() {
-  // Redirect to new day-based plan loader
   await loadClientPlansWithDays();
 }
 
@@ -1857,13 +1801,11 @@ async function toggleClientPlan(el, table, id) {
 
   await sb.from(table).update({ completed: newStatus }).eq('id', id);
 
-  // If checking a MEAL plan item — auto log it as food so dashboard updates
   if (table === 'meal_plans') {
     const { data: planItem } = await sb.from('meal_plans').select('*').eq('id', id).single();
     if (planItem) {
       const today = new Date().toISOString().split('T')[0];
       if (newStatus) {
-        // Check not already logged today (match by food name)
         const { data: existing } = await sb.from('food_logs')
           .select('id').eq('user_id', currentUser.id)
           .eq('food_name', planItem.description)
@@ -1887,7 +1829,6 @@ async function toggleClientPlan(el, table, id) {
           }
         }
       } else {
-        // Uncheck — remove from food log
         await sb.from('food_logs')
           .delete()
           .eq('user_id', currentUser.id)
@@ -1897,7 +1838,6 @@ async function toggleClientPlan(el, table, id) {
     }
   }
 
-  // Refresh dashboard and food log
   await updateDashboardStats();
   generateAIInsight();
   const logEl = document.getElementById('c-log');
@@ -1913,7 +1853,6 @@ async function loadClientMessages() {
   const { data: trainerProfile } = await sb.from('profiles').select('full_name').eq('id', trainerId).single();
   document.getElementById('c-msg-trainer-label').textContent = trainerProfile?.full_name || 'Your trainer';
 
-  // Fetch all messages and filter client side to avoid OR syntax issues
   const { data: sent } = await sb.from('messages').select('*').eq('sender_id', currentUser.id).eq('receiver_id', trainerId);
   const { data: received } = await sb.from('messages').select('*').eq('sender_id', trainerId).eq('receiver_id', currentUser.id);
   const msgs = [...(sent||[]), ...(received||[])].sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
@@ -1953,7 +1892,6 @@ async function sendClientMessage() {
   });
   if (error) { showToast('Error sending message'); return; }
   input.value = '';
-  // Save notification for trainer
   await sb.from('notifications').insert({
     user_id: currentProfile.trainer_id,
     title: (currentProfile.full_name || 'Your member') + ' sent a message',
@@ -1963,22 +1901,18 @@ async function sendClientMessage() {
   await loadClientMessages();
 }
 
-// ══════════ TRAINER APP ══════════
 async function loadTrainerApp() {
-  // Hide all top-level screens
   document.querySelectorAll('#mainApp > .screen').forEach(s => {
     s.style.display = 'none';
     s.classList.remove('active');
   });
   
-  // Show trainer screen
   const trainerScreen = document.getElementById('screen-trainer');
   if (trainerScreen) {
     trainerScreen.style.display = 'flex';
     trainerScreen.classList.add('active');
   }
   
-  // Show clients tab inside trainer
   document.querySelectorAll('#screen-trainer .screen').forEach(s => {
     s.style.display = 'none';
     s.classList.remove('active');
@@ -1989,7 +1923,6 @@ async function loadTrainerApp() {
     clientsTab.classList.add('active');
   }
   
-  // Set active nav
   document.querySelectorAll('#screen-trainer .nav-btn').forEach(b => b.classList.remove('active'));
   const clientsNav = document.getElementById('tnav-clients');
   if (clientsNav) clientsNav.classList.add('active');
@@ -2000,7 +1933,6 @@ async function loadTrainerApp() {
     const c = document.getElementById('clientList');
     if (c) c.innerHTML = '<div style="padding:20px;color:#B54040;font-size:13px;">Error: ' + e.message + '</div>';
   }
-  // Init notifications
   setTimeout(() => { initFirebase(); checkUnreadNotifications(); }, 2000);
 
 function updateTrainerProfile() {
@@ -2077,13 +2009,10 @@ async function openClientDetail(clientId, clientName, avatarColor) {
   const today = new Date().toISOString().split('T')[0];
   const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
 
-  // Load client profile
   const { data: profile } = await sb.from('profiles').select('*').eq('id', clientId).single();
 
-  // Load today's food logs
   const { data: logs } = await sb.from('food_logs').select('*').eq('user_id', clientId).gte('logged_at', today).order('logged_at');
 
-  // Load today's meal plan completion
   const { data: mealPlan } = await sb.from('meal_plans').select('*').eq('client_id', clientId).eq('day_label', dayName);
   const totalMeals = (mealPlan || []).length;
   const doneMeals = (mealPlan || []).filter(m => m.completed).length;
@@ -2095,7 +2024,6 @@ async function openClientDetail(clientId, clientName, avatarColor) {
   const proteinGoal = Math.round(goal * 0.3 / 4);
   const proteinPct = Math.min(100, Math.round((totalProtein / proteinGoal) * 100));
 
-  // BMI
   let bmiHtml = '';
   if (profile?.weight && profile?.height) {
     const bmi = (profile.weight / Math.pow(profile.height / 100, 2)).toFixed(1);
@@ -2103,7 +2031,6 @@ async function openClientDetail(clientId, clientName, avatarColor) {
     bmiHtml = `<div style="font-size:10px;color:rgba(255,255,255,0.3);">${profile.weight}kg · ${profile.height}cm · BMI ${bmi} · ${status}</div>`;
   }
 
-  // AI insight for trainer
   let insight = '';
   if (totalCal === 0) {
     insight = `${clientName} hasn't logged anything today. Consider sending them a reminder.`;
@@ -2115,7 +2042,6 @@ async function openClientDetail(clientId, clientName, avatarColor) {
     insight = `${clientName} is on track today with ${totalCal} kcal and ${Math.round(totalProtein)}g protein. Good progress.`;
   }
 
-  // Food log HTML
   const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎' };
   let foodHtml = '';
   if (!logs || logs.length === 0) {
@@ -2190,7 +2116,6 @@ async function openClientDetail(clientId, clientName, avatarColor) {
       </div>
     </div>`;
 
-  // Use dedicated detail screen
   document.getElementById('t-detail-content').innerHTML = detailHtml;
   document.querySelectorAll('#screen-trainer .screen').forEach(s => {
     s.classList.remove('active');
@@ -2202,7 +2127,6 @@ async function openClientDetail(clientId, clientName, avatarColor) {
   const clientsNav = document.getElementById('tnav-clients');
   if (clientsNav) clientsNav.classList.add('active');
 
-  // Load today's workout for this client
   const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const todayName = dayNames[new Date().getDay()];
   const { data: workouts } = await sb.from('workout_plans').select('*').eq('client_id', clientId).eq('day_label', todayName);
@@ -2223,7 +2147,6 @@ async function openClientDetail(clientId, clientName, avatarColor) {
   }
 }
 
-// ══════════ INVITE ══════════
 async function openInviteModal() {
   openModal('inviteModal');
   const code = currentUser.id.substring(0, 8);
@@ -2247,14 +2170,12 @@ function shareWhatsApp() {
   window.open('https://wa.me/?text=' + msg);
 }
 
-// ══════════ NAVIGATION ══════════
 function goTo(screenId) {
   document.querySelectorAll('#mainApp > .screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(screenId);
   if (el) el.classList.add('active');
 }
 
-// ══════════ SHOW CLIENT TAB (UPDATED) ══════════
 function showClientTab(tab) {
   document.querySelectorAll('#screen-client .screen').forEach(s => {
     s.classList.remove('active');
@@ -2272,7 +2193,6 @@ function showClientTab(tab) {
   if (tab === 'history') loadClientHistory();
 }
 
-// ══════════ CLIENT PLAN WITH DAYS ══════════
 let clientSelectedDay = null;
 let clientCurrentPlanTab = 'meal';
 
@@ -2282,10 +2202,8 @@ async function loadClientPlansWithDays() {
   const todayName = dayNames[today.getDay()];
   clientSelectedDay = clientSelectedDay || todayName;
 
-  // Update header
   document.getElementById('plan-day-label').textContent = clientSelectedDay === todayName ? 'Today · ' + todayName : todayName;
 
-  // Build day tabs
   const tabsContainer = document.getElementById('clientDayTabs');
   const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
   tabsContainer.innerHTML = days.map(d => {
@@ -2305,13 +2223,10 @@ function setClientDay(day) {
 async function loadClientPlanForDay() {
   if (!clientSelectedDay) return;
 
-  // Load meal plans for this day
   const { data: mealPlans } = await sb.from('meal_plans').select('*').eq('client_id', currentUser.id).eq('day_label', clientSelectedDay).order('created_at');
 
-  // Load workout plans for this day
   const { data: workoutPlans } = await sb.from('workout_plans').select('*').eq('client_id', currentUser.id).eq('day_label', clientSelectedDay).order('created_at');
 
-  // Load today's food logs to cross-reference
   const today = new Date().toISOString().split('T')[0];
   const { data: todayLogs } = await sb.from('food_logs').select('*').eq('user_id', currentUser.id).gte('logged_at', today);
 
@@ -2319,14 +2234,12 @@ async function loadClientPlanForDay() {
   const workContainer = document.getElementById('cWorkView');
   const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎' };
 
-  // MEAL VIEW
   if (!mealPlans || mealPlans.length === 0) {
     mealContainer.innerHTML = '<div class="empty-plan"><div class="empty-plan-icon">📋</div><div class="empty-plan-title">No meal plan for ' + clientSelectedDay + '</div><div class="empty-plan-sub">Your trainer hasn\'t set meals for this day yet.</div></div>';
   } else {
     let html = `<div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">${clientSelectedDay} · Planned meals</div>`;
     mealPlans.forEach(plan => {
       const emoji = mealEmojis[plan.meal_type] || '🍽️';
-      // Check if client logged something for this meal type today
       const logged = (todayLogs || []).find(l => l.meal_type === plan.meal_type);
       const isLogged = !!logged;
       const isDifferent = isLogged && logged.food_name.toLowerCase() !== plan.description.toLowerCase();
@@ -2356,7 +2269,6 @@ async function loadClientPlanForDay() {
     mealContainer.innerHTML = html;
   }
 
-  // WORKOUT VIEW
   if (!workoutPlans || workoutPlans.length === 0) {
     workContainer.innerHTML = '<div class="empty-plan"><div class="empty-plan-icon">💪</div><div class="empty-plan-title">No workout for ' + clientSelectedDay + '</div><div class="empty-plan-sub">Your trainer hasn\'t set a workout for this day yet.</div></div>';
   } else {
@@ -2388,7 +2300,6 @@ function showCPlan(t) {
   document.getElementById('cWorkBtn').className = 'sw-btn' + (t === 'workout' ? ' active' : '');
 }
 
-// ══════════ CLIENT HISTORY ══════════
 async function loadClientHistory() {
   const container = document.getElementById('historyContent');
   container.innerHTML = '<div style="text-align:center;padding:20px;color:#5A5A52;font-size:13px;">Loading...</div>';
@@ -2404,7 +2315,6 @@ async function loadClientHistory() {
   const { data: checkins } = await sb.from('body_checkins').select('*').eq('user_id', currentUser.id).gte('checkin_date', startDate).order('checkin_date', { ascending: false });
   const { data: workouts } = await sb.from('workout_plans').select('*').eq('client_id', currentUser.id).eq('completed', true);
 
-  // History switcher
   let html = `
     <div style="display:flex;background:rgba(201,185,154,0.05);border:0.5px solid rgba(201,185,154,0.1);border-radius:10px;padding:3px;margin-bottom:14px;">
       <button onclick="showHistoryTab('food')" id="histFoodBtn" style="flex:1;padding:7px;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;background:#2A2A26;color:#fff;">🍽️ Food</button>
@@ -2436,7 +2346,6 @@ async function loadClientHistory() {
   if (!hasFoodData) html += '<div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">No food logs yet.<br>Start logging meals to see history here.</div>';
   html += '</div>';
 
-  // WORKOUT HISTORY
   html += '<div id="histWorkView" style="display:none;">';
   const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const completedByDay = {};
@@ -2474,9 +2383,7 @@ function showHistoryTab(tab) {
   document.getElementById('histWorkBtn').style.color = tab === 'workout' ? '#E8E4DC' : '#5A5A52';
 }
 
-// ══════════ TRAINER HISTORY ══════════
 async function loadTrainerHistory() {
-  // Reset history screen to show client list
   const container = document.getElementById('tHistoryContent');
   if (container) {
     container.innerHTML = `
@@ -2486,7 +2393,6 @@ async function loadTrainerHistory() {
       </div>`;
   }
 
-  // Make sure history tab is visible
   document.querySelectorAll('#screen-trainer .screen').forEach(s => {
     s.classList.remove('active');
     s.style.display = 'none';
@@ -2563,7 +2469,6 @@ async function loadClientHistoryForTrainer(clientId, clientName) {
   container.innerHTML = html;
 }
 
-// ══════════ EDIT PROFILE ══════════
 function openEditProfile() {
   if (!currentProfile) return;
   document.getElementById('editProfileName').value = currentProfile.full_name || '';
@@ -2585,7 +2490,6 @@ async function saveEditProfile() {
   const gender = document.getElementById('editProfileGender').value;
   const name = document.getElementById('editProfileName').value.trim();
 
-  // Always store in metric — edit profile always uses kg/cm
   const w = wRaw;
   const h = hRaw;
 
@@ -2607,11 +2511,10 @@ async function saveEditProfile() {
   showClientTab('profile');
 }
 
-// ══════════ WEIGHT CHECK-IN ══════════
 async function checkWeeklyWeightPrompt() {
   if (!currentProfile || currentProfile.role === 'trainer') return;
   const today = new Date();
-  if (today.getDay() !== 0) return; // Only on Sundays
+  if (today.getDay() !== 0) return;
   const lastCheckIn = localStorage.getItem('lastWeightCheckIn');
   const todayStr = today.toISOString().split('T')[0];
   if (lastCheckIn === todayStr) return;
@@ -2632,15 +2535,13 @@ async function saveWeightCheckIn() {
   updateClientProfile();
 }
 
-// ══════════ AI MEAL RECOMMENDATIONS ══════════
-let mealRecsCache = {}; // { clientId: { generated_at, recs } }
+let mealRecsCache = {};
 
 async function loadMealSuggestions() {
   if (!selectedClient) return;
   const container = document.getElementById('mealSuggestionsContainer');
   if (!container) return;
 
-  // Check cache
   const cached = mealRecsCache[selectedClient.id];
   if (cached) {
     renderMealSuggestions(cached.recs);
@@ -2649,7 +2550,6 @@ async function loadMealSuggestions() {
 
   container.innerHTML = '<div style="color:#5A5A52;font-size:12px;">✨ Generating meal suggestions...</div>';
 
-  // Get client profile for stats
   const { data: clientProfile } = await sb.from('profiles').select('*').eq('id', selectedClient.id).single();
   const goal = clientProfile?.goal || 'maintain';
   const calorieGoal = clientProfile?.calorie_goal || 1800;
@@ -2701,7 +2601,6 @@ Return ONLY valid JSON in this exact format, no other text:
     const clean = text.replace(/```json|```/g, '').trim();
     const recs = JSON.parse(clean);
 
-    // Cache it
     mealRecsCache[selectedClient.id] = { generated_at: Date.now(), recs };
     renderMealSuggestions(recs);
 
@@ -2790,7 +2689,6 @@ async function loadTrainerPlans() {
   container.innerHTML = '<div class="card" style="padding:6px 12px;">' + html + '</div>';
 }
 
-// ══════════ WORKOUT TEMPLATES ══════════
 const WORKOUT_TEMPLATES = {
   push: {
     label: 'Push Day', emoji: '💪',
@@ -2842,17 +2740,15 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 const DAY_NAMES_JS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 let currentPlanDay = DAY_NAMES_JS[new Date().getDay()];
 let currentPlanTab = 'workout';
-let weeklyPlan = {}; // { Monday: { type: 'push', exercises: [...] }, ... }
-let weeklyMeals = {}; // { Monday: [ { type, desc, cal, protein } ] }
+let weeklyPlan = {};
+let weeklyMeals = {};
 
 async function openClientPlan(clientId, clientName) {
   selectedClient = { id: clientId, name: clientName };
 
-  // Load existing plans from DB
   const { data: mealPlans } = await sb.from('meal_plans').select('*').eq('client_id', clientId).order('created_at');
   const { data: workoutPlans } = await sb.from('workout_plans').select('*').eq('client_id', clientId).order('created_at');
 
-  // Build weeklyPlan and weeklyMeals from DB data
   weeklyPlan = {};
   weeklyMeals = {};
   DAYS.forEach(d => { weeklyPlan[d] = { type: null, exercises: [] }; weeklyMeals[d] = []; });
@@ -2894,7 +2790,6 @@ function renderPlanBuilder() {
     </button>`;
   }).join('');
 
-  // Current day exercises
   const exercises = weeklyPlan[currentPlanDay]?.exercises || [];
   let exHtml = '';
   if (exercises.length === 0) {
@@ -2911,7 +2806,6 @@ function renderPlanBuilder() {
     });
   }
 
-  // Current day meals
   const meals = weeklyMeals[currentPlanDay] || [];
   const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎' };
   let mealHtml = '';
@@ -3017,7 +2911,6 @@ function setPlanTab(tab) {
 function applyTemplate(key) {
   const template = WORKOUT_TEMPLATES[key];
   if (!template) return;
-  // Deep copy exercises
   weeklyPlan[currentPlanDay] = {
     type: key,
     exercises: template.exercises.map(e => ({ ...e, exercise_name: e.name || e.exercise_name }))
@@ -3066,11 +2959,9 @@ async function savePlanToDB() {
   const btn = document.querySelector('[onclick="savePlanToDB()"]');
   if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
 
-  // Delete existing plans for this client
   await sb.from('workout_plans').delete().eq('client_id', selectedClient.id);
   await sb.from('meal_plans').delete().eq('client_id', selectedClient.id);
 
-  // Insert all workout plans
   const workoutRows = [];
   Object.entries(weeklyPlan).forEach(([day, dayPlan]) => {
     (dayPlan.exercises || []).forEach(ex => {
@@ -3088,7 +2979,6 @@ async function savePlanToDB() {
     });
   });
 
-  // Insert all meal plans
   const mealRows = [];
   Object.entries(weeklyMeals).forEach(([day, meals]) => {
     (meals || []).forEach(meal => {
@@ -3111,7 +3001,6 @@ async function savePlanToDB() {
   if (btn) { btn.disabled = false; btn.textContent = '📤 Save & send full plan to ' + selectedClient.name; }
 }
 
-// Legacy functions kept for compatibility
 async function addMealPlanItem() { addOneMeal(); }
 async function addWorkoutPlanItem() { addOneExercise(); }
 async function deletePlanItem(type, id) {
@@ -3193,18 +3082,15 @@ async function sendTrainerMessage() {
   await openClientMessages(selectedClient.id, selectedClient.name);
 }
 
-// ══════════ MODALS ══════════
 function openModal(id) { document.getElementById(id).classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-// Close modal on overlay click
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('show');
   });
 });
 
-// ══════════ TOAST ══════════
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -3212,23 +3098,19 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ══════════ CHECK INVITE CODE ══════════
 async function checkInviteCode() {
   const params = new URLSearchParams(window.location.search);
   const trainerId = params.get('trainer');
   if (!trainerId) return;
 
-  // Store trainer ID regardless
   localStorage.setItem('pendingTrainerId', trainerId);
 
-  // If not logged in — send to signup with a message
   if (!currentUser) {
     showToast('Sign up or log in to connect with your trainer');
     goTo('screen-signup');
     return;
   }
 
-  // Don't connect trainer to themselves
   if (trainerId === currentUser.id) {
     window.history.replaceState({}, document.title, window.location.pathname);
     return;
@@ -3252,7 +3134,6 @@ async function connectToTrainer(trainerId) {
   }
 }
 
-// Check for pending invite after login/signup
 async function checkPendingInvite() {
   const pendingTrainerId = localStorage.getItem('pendingTrainerId');
   if (pendingTrainerId && currentUser) {
@@ -3260,7 +3141,6 @@ async function checkPendingInvite() {
   }
 }
 
-// ══════════ FIREBASE NOTIFICATIONS ══════════
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBOxNjOZ0a5mR7xOdoShEX2tZhbIKA09-M",
   authDomain: "reforme-3f82c.firebaseapp.com",
@@ -3275,7 +3155,6 @@ const VAPID_KEY = "BLdjzhhu3UKd5JDmlIUqv4PVTr_GB3gri8CZvgP4zE9Ffu4XbCCNME_r9PZ09
 let fbMessaging = null;
 
 async function initFirebase() {
-  // Load Firebase scripts dynamically so they don't block app loading
   if (typeof firebase === 'undefined') {
     await new Promise((resolve) => {
       const s1 = document.createElement('script');
@@ -3299,7 +3178,6 @@ async function initFirebase() {
     }
     fbMessaging = firebase.messaging();
 
-    // Register service worker
     if ('serviceWorker' in navigator) {
       try {
         await navigator.serviceWorker.register('/firebase-messaging-sw.js');
@@ -3308,7 +3186,6 @@ async function initFirebase() {
       }
     }
 
-    // Handle foreground messages
     fbMessaging.onMessage((payload) => {
       const { title, body } = payload.notification || {};
       if (title) showNotificationToast(title, body);
@@ -3354,8 +3231,6 @@ function showNotificationToast(title, body) {
   setTimeout(() => t.classList.remove('show'), 4000);
 }
 
-// Send notification to a specific user via Supabase Edge Function
-// For now we use a direct approach — schedule notifications via database
 async function scheduleNotification(userId, title, body, type) {
   try {
     await sb.from('notifications').insert({
@@ -3371,7 +3246,6 @@ async function scheduleNotification(userId, title, body, type) {
   }
 }
 
-// Check and send daily reminder notifications
 async function checkUnreadNotifications() {
   if (!currentUser || !sb) return;
   try {
@@ -3384,18 +3258,15 @@ async function checkUnreadNotifications() {
 
     if (!notifs || notifs.length === 0) return;
 
-    // Show badge on messages nav button
     const msgNav = document.getElementById('cnav-messages');
     if (msgNav) {
       const dot = msgNav.querySelector('.notif-dot');
       if (dot) dot.style.display = 'block';
     }
 
-    // Show toast for most recent
     const latest = notifs[0];
     showNotificationToast(latest.title, latest.body);
 
-    // Mark all as read
     await sb.from('notifications')
       .update({ read: true })
       .eq('user_id', currentUser.id)
@@ -3408,13 +3279,12 @@ async function checkUnreadNotifications() {
 async function checkDailyReminders() {
   if (!currentProfile || currentProfile.role === 'trainer') return;
   const hour = new Date().getHours();
-  if (hour < 8 || hour > 20) return; // Only send between 8am and 8pm
+  if (hour < 8 || hour > 20) return;
 
   const today = new Date().toISOString().split('T')[0];
   const { data: logs } = await sb.from('food_logs').select('id').eq('user_id', currentUser.id).gte('logged_at', today);
 
   if (!logs || logs.length === 0) {
-    // Haven't logged today — show in-app reminder
     if (hour >= 12 && hour <= 14) {
       showNotificationToast("Don't forget to log lunch!", "Tap Log food to add your meal");
     } else if (hour >= 18 && hour <= 20) {
@@ -3423,40 +3293,46 @@ async function checkDailyReminders() {
   }
 }
 
-// ══════════ START ══════════
 let supabaseReady = false;
 
-function waitForSupabase(callback) {
+function showApp() {
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'flex';
+}
+
+function startApp() {
+  const params = new URLSearchParams(window.location.search);
+  const trainerId = params.get('trainer');
+  if (trainerId) localStorage.setItem('pendingTrainerId', trainerId);
   try {
     sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
-    callback();
+    showApp();
+    init();
   } catch(e) {
-    console.error('Supabase error:', e);
-    document.getElementById('loadingScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'flex';
+    console.error('Start error:', e);
+    showApp();
     goTo('screen-welcome');
   }
 }
 
-window.addEventListener('load', () => {
-  const params = new URLSearchParams(window.location.search);
-  const trainerId = params.get('trainer');
-  if (trainerId) localStorage.setItem('pendingTrainerId', trainerId);
-
-  // GUARANTEED FALLBACK — no matter what happens, show the app within 3 seconds
-  const forceShow = setTimeout(() => {
-    document.getElementById('loadingScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'flex';
-    goTo('screen-welcome');
-  }, 3000);
-
-  waitForSupabase(async () => {
-    clearTimeout(forceShow);
-    await init();
-  });
-});
+if (typeof supabase !== 'undefined') {
+  startApp();
+} else {
+  let tries = 0;
+  const interval = setInterval(() => {
+    tries++;
+    if (typeof supabase !== 'undefined') {
+      clearInterval(interval);
+      startApp();
+    } else if (tries > 20) {
+      clearInterval(interval);
+      showApp();
+      goTo('screen-welcome');
+    }
+  }, 200);
+}
 </script>
 </body>
 </html>
