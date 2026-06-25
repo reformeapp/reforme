@@ -1842,46 +1842,49 @@ async function toggleClientPlan(el, table, id) {
   check.className = 'plan-check' + (newStatus ? ' done' : '');
   check.innerHTML = newStatus ? '<i class="ti ti-check" style="font-size:11px;"></i>' : '';
 
-  const { error } = await sb.from(table).update({ completed: newStatus }).eq('id', id);
-  if (error) { showToast('Error saving. Try again.'); return; }
+  await sb.from(table).update({ completed: newStatus }).eq('id', id);
 
-  // If checking a MEAL plan item — auto log it as food
-  if (table === 'meal_plans' && newStatus) {
-    const { data: planItem } = await sb.from('meal_plans').select('*').eq('id', id).single();
-    if (planItem && planItem.calories > 0) {
-      // Check if already logged this meal type today
-      const today = new Date().toISOString().split('T')[0];
-      const { data: existing } = await sb.from('food_logs').select('id').eq('user_id', currentUser.id).eq('meal_type', planItem.meal_type).gte('logged_at', today);
-      if (!existing || existing.length === 0) {
-        // Auto-log the planned meal
-        await sb.from('food_logs').insert({
-          user_id: currentUser.id,
-          food_name: planItem.description,
-          calories: planItem.calories,
-          protein: planItem.protein || 0,
-          carbs: 0,
-          fat: 0,
-          meal_type: planItem.meal_type
-        });
-        showToast('✓ ' + (planItem.meal_type || 'Meal') + ' logged to your food diary');
-      }
-    }
-  } else if (table === 'meal_plans' && !newStatus) {
-    // Unchecking — remove auto-logged entry if it exists
+  // If checking a MEAL plan item — auto log it as food so dashboard updates
+  if (table === 'meal_plans') {
     const { data: planItem } = await sb.from('meal_plans').select('*').eq('id', id).single();
     if (planItem) {
       const today = new Date().toISOString().split('T')[0];
-      await sb.from('food_logs').delete().eq('user_id', currentUser.id).eq('food_name', planItem.description).gte('logged_at', today);
+      if (newStatus) {
+        // Check not already logged today (match by food name)
+        const { data: existing } = await sb.from('food_logs')
+          .select('id').eq('user_id', currentUser.id)
+          .eq('food_name', planItem.description)
+          .gte('logged_at', today);
+        if (!existing || existing.length === 0) {
+          const cal = planItem.calories || 0;
+          const prot = planItem.protein || 0;
+          await sb.from('food_logs').insert({
+            user_id: currentUser.id,
+            food_name: planItem.description || 'Planned meal',
+            calories: cal,
+            protein: prot,
+            carbs: 0,
+            fat: 0,
+            meal_type: planItem.meal_type || 'snack'
+          });
+          if (cal > 0) showToast('✓ ' + (planItem.description || 'Meal') + ' logged — ' + cal + ' kcal');
+        }
+      } else {
+        // Uncheck — remove from food log
+        await sb.from('food_logs')
+          .delete()
+          .eq('user_id', currentUser.id)
+          .eq('food_name', planItem.description)
+          .gte('logged_at', today);
+      }
     }
   }
 
-  // Always refresh dashboard
+  // Refresh dashboard and food log
   await updateDashboardStats();
   generateAIInsight();
-  // Refresh food log if on log tab
-  if (document.getElementById('c-log').classList.contains('active')) {
-    await loadFoodLog();
-  }
+  const logEl = document.getElementById('c-log');
+  if (logEl && logEl.classList.contains('active')) await loadFoodLog();
 }
 
 async function loadClientMessages() {
@@ -1934,13 +1937,12 @@ async function sendClientMessage() {
 
 // ══════════ TRAINER APP ══════════
 async function loadTrainerApp() {
-  try {
-    goTo('screen-trainer');
-    updateTrainerProfile();
-    await loadTrainerClients();
-  } catch(e) {
-    console.error('loadTrainerApp error:', e);
-    showToast('Error loading app. Please refresh.');
+  try { goTo('screen-trainer'); } catch(e) { console.error('goTo trainer error:', e); }
+  try { updateTrainerProfile(); } catch(e) { console.error('updateTrainerProfile error:', e); }
+  try { await loadTrainerClients(); } catch(e) {
+    console.error('loadTrainerClients error:', e);
+    const c = document.getElementById('clientList');
+    if (c) c.innerHTML = '<div style="padding:20px;color:#B54040;font-size:13px;text-align:center;">Error loading clients. Tap Clients to retry.</div>';
   }
 }
 
@@ -1961,20 +1963,23 @@ function updateTrainerProfile() {
 }
 
 async function loadTrainerClients() {
+  const container = document.getElementById('clientList');
+  if (container) container.innerHTML = '<div style="text-align:center;padding:20px;color:#5A5A52;font-size:12px;">Loading...</div>';
   const { data: clients, error } = await sb.from('profiles').select('*').eq('trainer_id', currentUser.id);
-  if (error) { console.error('loadTrainerClients error:', error); return; }
-  const clientList = clients || [];
   const totalEl = document.getElementById('totalClients');
   const labelEl = document.getElementById('trainerClientsLabel');
   const countEl = document.getElementById('trainerClientCount');
   const onTrackEl = document.getElementById('onTrackCount');
   const attnEl = document.getElementById('attentionCount');
+  if (error) {
+    console.error('clients error:', error);
+    if (container) container.innerHTML = '<div style="text-align:center;padding:30px 20px;color:#5A5A52;font-size:13px;">Could not load clients. Try again.</div>';
+    return;
+  }
+  const clientList = clients || [];
   if (totalEl) totalEl.textContent = clientList.length;
   if (labelEl) labelEl.textContent = (currentProfile?.full_name?.split(' ')[0] || 'Coach') + ' · ' + clientList.length + ' active clients';
   if (countEl) countEl.textContent = clientList.length + ' clients';
-  let onTrack = 0, attention = 0;
-  const today = new Date().toISOString().split('T')[0];
-  const container = document.getElementById('clientList');
   if (!container) return;
   if (clientList.length === 0) {
     container.innerHTML = '<div style="text-align:center;padding:30px 20px;color:#5A5A52;font-size:13px;">No clients yet.<br>Tap + Invite to add your first client.</div>';
@@ -1982,29 +1987,29 @@ async function loadTrainerClients() {
     if (attnEl) attnEl.textContent = '0';
     return;
   }
+  const today = new Date().toISOString().split('T')[0];
+  const clientIds = clientList.map(c => c.id);
+  const { data: allLogs } = await sb.from('food_logs').select('user_id,calories').in('user_id', clientIds).gte('logged_at', today);
   const colors = ['#2D6A4F','#C17D3C','#5C4A8A','#2C5F8A','#B54040'];
   let html = '';
-  for (let i = 0; i < clientList.length; i++) {
-    const client = clientList[i];
-    const { data: logs } = await sb.from('food_logs').select('calories').eq('user_id', client.id).gte('logged_at', today);
-    const loggedToday = logs && logs.length > 0;
-    const totalCal = (logs || []).reduce((s, l) => s + (l.calories || 0), 0);
+  let onTrack = 0, attention = 0;
+  clientList.forEach((client, i) => {
+    const clientLogs = (allLogs||[]).filter(l => l.user_id === client.id);
+    const loggedToday = clientLogs.length > 0;
+    const totalCal = clientLogs.reduce((s,l) => s+(l.calories||0), 0);
     if (loggedToday) onTrack++; else attention++;
-    const initial = (client.full_name || 'U').substring(0, 2).toUpperCase();
-    const color = colors[i % colors.length];
+    const initial = (client.full_name||'U').substring(0,2).toUpperCase();
+    const color = colors[i%colors.length];
     const tag = loggedToday ? '<span class="tag tag-g">On track</span>' : '<span class="tag tag-r">No log</span>';
-    const calText = loggedToday ? totalCal.toLocaleString() + ' kcal today' : 'Hasn\'t logged today';
-    html += `<div class="client-item" onclick="openClientDetail('${client.id}','${client.full_name || 'Client'}','${color}')">
+    const calText = loggedToday ? totalCal.toLocaleString()+' kcal today' : "Hasn't logged today";
+    const safeName = (client.full_name||'Client').replace(/'/g,"\'");
+    html += `<div class="client-item" onclick="openClientDetail('${client.id}','${safeName}','${color}')">
       <div class="c-avatar" style="background:${color};">${initial}</div>
-      <div style="flex:1;">
-        <div style="font-size:13px;font-weight:500;color:#1A1A18;">${client.full_name || 'Unknown'}</div>
-        <div style="font-size:11px;color:#5C5C52;margin-top:1px;">${calText}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-        ${tag}
-      </div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:#1A1A18;">${client.full_name||'Unknown'}</div>
+      <div style="font-size:11px;color:#5C5C52;margin-top:1px;">${calText}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">${tag}</div>
     </div>`;
-  }
+  });
   container.innerHTML = html;
   if (onTrackEl) onTrackEl.textContent = onTrack;
   if (attnEl) attnEl.textContent = attention;
