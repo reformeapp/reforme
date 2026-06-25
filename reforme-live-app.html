@@ -308,13 +308,13 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
       <div class="type-cards">
         <div class="type-card selected" id="type-client" onclick="selectUserType('client')">
           <div class="type-icon">🏃</div>
-          <div class="type-name">Client</div>
-          <div class="type-desc">Track meals & follow your plan</div>
+          <div class="type-name">Member</div>
+          <div class="type-desc">Track meals &amp; follow your plan</div>
         </div>
         <div class="type-card" id="type-trainer" onclick="selectUserType('trainer')">
           <div class="type-icon">💪</div>
-          <div class="type-name">Trainer</div>
-          <div class="type-desc">Manage clients & send plans</div>
+          <div class="type-name">Coach</div>
+          <div class="type-desc">Manage members &amp; send plans</div>
         </div>
       </div>
       <div class="error-msg" id="signupError"></div>
@@ -415,7 +415,10 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 <!-- ══════════ CLIENT APP ══════════ -->
 <div class="screen" id="screen-client">
   <div class="app-main">
-    <div style="background:#111110;padding:10px 20px 0;flex-shrink:0;"><span class="logo">Reformé</span></div>
+    <div style="background:#111110;padding:10px 20px 0;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;">
+      <span class="logo">Reformé</span>
+      <div id="clientAvatarBtn" onclick="showClientTab('profile')" style="width:34px;height:34px;border-radius:50%;background:#2D6A4F;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:'DM Serif Display',serif;border:1.5px solid #1A4A32;"></div>
+    </div>
 
     <!-- CLIENT SCREENS -->
     <div class="screen active" id="c-dashboard">
@@ -621,10 +624,14 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 
     <!-- PROFILE -->
     <div class="screen" id="c-profile">
+      <div style="background:#111110;padding:12px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+        <button onclick="showClientTab('dashboard')" style="background:#1E1E1B;border:none;color:#C9B99A;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:7px 12px;border-radius:8px;display:flex;align-items:center;gap:4px;"><i class="ti ti-arrow-left"></i> Back</button>
+        <span style="font-family:'DM Serif Display',serif;font-size:16px;color:#fff;">Profile</span>
+      </div>
       <div class="profile-header">
         <div class="p-avatar" id="clientAvatarInitial">?</div>
         <div class="p-name" id="clientProfileName">Loading...</div>
-        <div class="p-role" id="clientProfileRole">Client</div>
+        <div class="p-role" id="clientProfileRole">Member</div>
       </div>
       <div style="overflow-y:auto;flex:1;">
         <div style="background:#1E1E1B;border-radius:12px;margin:12px 16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;">
@@ -647,7 +654,6 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
       <button class="nav-btn" id="cnav-plan" onclick="showClientTab('plan')"><i class="ti ti-clipboard-list"></i><span>Plan</span></button>
       <button class="nav-btn" id="cnav-messages" onclick="showClientTab('messages')"><div class="notif-wrap"><i class="ti ti-message-circle"></i></div><span>Messages</span></button>
       <button class="nav-btn" id="cnav-history" onclick="showClientTab('history')"><i class="ti ti-calendar"></i><span>History</span></button>
-      <button class="nav-btn" id="cnav-profile" onclick="showClientTab('profile')"><i class="ti ti-user"></i><span>Profile</span></button>
     </div>
   </div>
 </div>
@@ -655,7 +661,10 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 <!-- ══════════ TRAINER APP ══════════ -->
 <div class="screen" id="screen-trainer">
   <div class="app-main">
-    <div style="background:#111110;padding:10px 20px 0;flex-shrink:0;"><span class="logo">Reformé</span></div>
+    <div style="background:#111110;padding:10px 20px 0;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;">
+      <span class="logo">Reformé</span>
+      <div id="trainerAvatarBtn" onclick="showTrainerTab('profile')" style="width:34px;height:34px;border-radius:50%;background:#C9B99A;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#111110;cursor:pointer;font-family:'DM Serif Display',serif;border:1.5px solid #A09070;"></div>
+    </div>
 
     <div class="screen active" id="t-clients">
       <div class="page-header">
@@ -708,10 +717,14 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
     </div>
 
     <div class="screen" id="t-profile">
+      <div style="background:#111110;padding:12px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+        <button onclick="showTrainerTab('clients')" style="background:#1E1E1B;border:none;color:#C9B99A;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:7px 12px;border-radius:8px;display:flex;align-items:center;gap:4px;"><i class="ti ti-arrow-left"></i> Back</button>
+        <span style="font-family:'DM Serif Display',serif;font-size:16px;color:#fff;">Profile</span>
+      </div>
       <div class="profile-header">
         <div class="p-avatar" id="trainerAvatarInitial">T</div>
         <div class="p-name" id="trainerProfileName">Loading...</div>
-        <div class="p-role">Personal trainer</div>
+        <div class="p-role">Coach</div>
       </div>
       <div style="overflow-y:auto;flex:1;">
         <div class="setting-row"><i class="ti ti-barbell" style="font-size:17px;color:#2D6A4F;"></i><span class="setting-label">Speciality</span><span class="setting-val" id="trainerSpeciality">Not set</span><i class="ti ti-chevron-right" style="color:#A0A090;"></i></div>
@@ -740,7 +753,6 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
       <button class="nav-btn" id="tnav-plans" onclick="showTrainerTab('plans')"><i class="ti ti-clipboard-list"></i><span>Plans</span></button>
       <button class="nav-btn" id="tnav-messages" onclick="showTrainerTab('messages')"><div class="notif-wrap"><i class="ti ti-message-circle"></i></div><span>Messages</span></button>
       <button class="nav-btn" id="tnav-history" onclick="showTrainerTab('history')"><i class="ti ti-calendar"></i><span>History</span></button>
-      <button class="nav-btn" id="tnav-profile" onclick="showTrainerTab('profile')"><i class="ti ti-user"></i><span>Profile</span></button>
     </div>
   </div>
 </div>
@@ -983,8 +995,19 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 // ══════════ SUPABASE INIT ══════════
 const SUPABASE_URL = 'https://mzpvainvmhbpjyambwap.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cHZhaW52bWhicGp5YW1id2FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTI0NzIsImV4cCI6MjA5Nzg4ODQ3Mn0.evlBxIC8K-fplIrEIS8JsxMN8QSvmfr5q5r77JX-Gm0';
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let sb;
+try {
+  const { createClient } = supabase;
+  sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  });
+} catch(e) {
+  console.error('Supabase init error:', e);
+}
 
 // ══════════ STATE ══════════
 let currentUser = null;
@@ -1303,14 +1326,23 @@ function updateClientProfile() {
   if (!currentProfile) return;
   const name = currentProfile.full_name || 'User';
   const initial = name.charAt(0).toUpperCase();
-  document.getElementById('clientAvatarInitial').textContent = initial;
-  document.getElementById('clientProfileName').textContent = name;
-  document.getElementById('clientProfileRole').textContent = currentProfile.role === 'trainer' ? 'Trainer' : 'Client';
-  document.getElementById('profileWeightSetting').textContent = currentProfile.weight ? currentProfile.weight + ' kg' : 'Not set';
-  document.getElementById('profileHeightSetting').textContent = currentProfile.height ? currentProfile.height + ' cm' : 'Not set';
+  const avatarEl = document.getElementById('clientAvatarBtn');
+  const avatarInitialEl = document.getElementById('clientAvatarInitial');
+  if (avatarEl) avatarEl.textContent = initial;
+  if (avatarInitialEl) avatarInitialEl.textContent = initial;
+  const nameEl = document.getElementById('clientProfileName');
+  if (nameEl) nameEl.textContent = name;
+  const roleEl = document.getElementById('clientProfileRole');
+  if (roleEl) roleEl.textContent = 'Member';
   const goalMap = {lose:'Lose weight', muscle:'Build muscle', maintain:'Maintain', health:'Get healthier'};
-  document.getElementById('profileGoalSetting').textContent = goalMap[currentProfile.goal] || 'Not set';
-  document.getElementById('profileCalTarget').textContent = currentProfile.calorie_goal ? currentProfile.calorie_goal.toLocaleString() + ' kcal / day' : 'Not calculated';
+  const wEl = document.getElementById('profileWeightSetting');
+  const hEl = document.getElementById('profileHeightSetting');
+  const gEl = document.getElementById('profileGoalSetting');
+  const cEl = document.getElementById('profileCalTarget');
+  if (wEl) wEl.textContent = currentProfile.weight ? currentProfile.weight + ' kg' : 'Not set';
+  if (hEl) hEl.textContent = currentProfile.height ? currentProfile.height + ' cm' : 'Not set';
+  if (gEl) gEl.textContent = goalMap[currentProfile.goal] || 'Not set';
+  if (cEl) cEl.textContent = currentProfile.calorie_goal ? currentProfile.calorie_goal.toLocaleString() + ' kcal / day' : 'Not calculated';
 }
 
 // ══════════ WATER TRACKER ══════════
@@ -1535,16 +1567,18 @@ async function loadTrainerApp() {
 
 function updateTrainerProfile() {
   if (!currentProfile) return;
-  const name = currentProfile.full_name || 'Trainer';
+  const name = currentProfile.full_name || 'Coach';
   const initial = name.charAt(0).toUpperCase();
-  const el1 = document.getElementById('trainerAvatarInitial');
-  const el2 = document.getElementById('trainerProfileName');
-  const el3 = document.getElementById('trainerSpeciality');
-  const el4 = document.getElementById('trainerCert');
-  if (el1) el1.textContent = initial;
-  if (el2) el2.textContent = name;
-  if (el3) el3.textContent = currentProfile.speciality || 'Not set';
-  if (el4) el4.textContent = currentProfile.certification || 'Not set';
+  const avatarBtn = document.getElementById('trainerAvatarBtn');
+  const avatarInitial = document.getElementById('trainerAvatarInitial');
+  if (avatarBtn) avatarBtn.textContent = initial;
+  if (avatarInitial) avatarInitial.textContent = initial;
+  const nameEl = document.getElementById('trainerProfileName');
+  const specEl = document.getElementById('trainerSpeciality');
+  const certEl = document.getElementById('trainerCert');
+  if (nameEl) nameEl.textContent = name;
+  if (specEl) specEl.textContent = currentProfile.speciality || 'Not set';
+  if (certEl) certEl.textContent = currentProfile.certification || 'Not set';
 }
 
 async function loadTrainerClients() {
