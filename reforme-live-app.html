@@ -1929,26 +1929,29 @@ async function sendClientMessage() {
 
 // ══════════ TRAINER APP ══════════
 async function loadTrainerApp() {
-  showToast('Loading trainer app...');
   try {
     goTo('screen-trainer');
-    showToast('Screen loaded');
+    // Make sure clients tab is visible
+    document.querySelectorAll('#screen-trainer .screen').forEach(s => s.classList.remove('active'));
+    const clientsTab = document.getElementById('t-clients');
+    if (clientsTab) clientsTab.classList.add('active');
+    document.querySelectorAll('#screen-trainer .nav-btn').forEach(b => b.classList.remove('active'));
+    const clientsNav = document.getElementById('tnav-clients');
+    if (clientsNav) clientsNav.classList.add('active');
   } catch(e) {
-    showToast('Screen error: ' + e.message);
-    return;
+    console.error('goTo trainer error:', e);
   }
   try {
     updateTrainerProfile();
   } catch(e) {
-    showToast('Profile error: ' + e.message);
+    console.error('updateTrainerProfile error:', e);
   }
   try {
     await loadTrainerClients();
-    showToast('Clients loaded');
   } catch(e) {
-    showToast('Clients error: ' + e.message);
+    console.error('loadTrainerClients error:', e);
     const c = document.getElementById('clientList');
-    if (c) c.innerHTML = '<div style="padding:20px;color:#B54040;font-size:13px;text-align:center;">Error: ' + e.message + '</div>';
+    if (c) c.innerHTML = '<div style="padding:20px;color:#B54040;font-size:13px;text-align:center;">Error loading clients. Tap Clients tab to retry.</div>';
   }
 }
 
