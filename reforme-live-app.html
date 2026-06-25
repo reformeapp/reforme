@@ -3444,7 +3444,18 @@ window.addEventListener('load', () => {
   const params = new URLSearchParams(window.location.search);
   const trainerId = params.get('trainer');
   if (trainerId) localStorage.setItem('pendingTrainerId', trainerId);
-  waitForSupabase(async () => { await init(); });
+
+  // GUARANTEED FALLBACK — no matter what happens, show the app within 3 seconds
+  const forceShow = setTimeout(() => {
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'flex';
+    goTo('screen-welcome');
+  }, 3000);
+
+  waitForSupabase(async () => {
+    clearTimeout(forceShow);
+    await init();
+  });
 });
 </script>
 </body>
