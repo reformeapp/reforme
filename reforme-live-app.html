@@ -474,18 +474,74 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
           <div style="font-size:12px;color:#5A5A52;margin-top:3px;">AI reads calories & macros instantly</div>
           <button class="btn-p" style="margin-top:12px;" onclick="showSnapDemo()"><i class="ti ti-camera"></i> Take photo</button>
           <div class="snap-result" id="snapResult">
-            <div style="font-size:10px;color:#5C5C52;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">AI detected</div>
-            <div style="font-size:14px;font-weight:500;color:#1A1A18;margin-bottom:8px;">Grilled chicken with rice</div>
-            <div style="font-family:'DM Serif Display',serif;font-size:44px;color:#1A1A18;line-height:1;">487 <span style="font-size:14px;color:#5C5C52;font-family:'DM Sans',sans-serif;">kcal</span></div>
-            <div style="display:flex;justify-content:center;gap:20px;margin:10px 0;">
-              <div style="text-align:center;"><div style="font-size:16px;font-weight:500;color:#2D6A4F;">42g</div><div style="font-size:10px;color:#5C5C52;text-transform:uppercase;">Protein</div></div>
-              <div style="text-align:center;"><div style="font-size:16px;font-weight:500;color:#2C5F8A;">51g</div><div style="font-size:10px;color:#5C5C52;text-transform:uppercase;">Carbs</div></div>
-              <div style="text-align:center;"><div style="font-size:16px;font-weight:500;color:#C17D3C;">8g</div><div style="font-size:10px;color:#5C5C52;text-transform:uppercase;">Fat</div></div>
+            <div style="font-size:10px;color:#5C5C52;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">AI detected</div>
+
+            <!-- COMPLEX DISH — ingredients breakdown -->
+            <div id="snapComplexView">
+              <div style="font-size:14px;font-weight:500;color:#1A1A18;margin-bottom:12px;">Grilled chicken with rice</div>
+              <div style="font-size:11px;color:#5C5C52;margin-bottom:8px;">Enter grams per ingredient for accurate macros:</div>
+              <div id="snapIngredients">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="flex:1;font-size:13px;color:#1A1A18;">🍗 Chicken breast</div>
+                  <input type="number" id="ing0" placeholder="150g" oninput="recalcSnapMacros()" style="width:70px;padding:7px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:#F5F2EE;color:#1A1A18;outline:none;">
+                  <span style="font-size:10px;color:#A0A090;">g</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="flex:1;font-size:13px;color:#1A1A18;">🍚 White rice</div>
+                  <input type="number" id="ing1" placeholder="200g" oninput="recalcSnapMacros()" style="width:70px;padding:7px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:#F5F2EE;color:#1A1A18;outline:none;">
+                  <span style="font-size:10px;color:#A0A090;">g</span>
+                </div>
+              </div>
             </div>
-            <div style="font-size:11px;color:#5C5C52;margin-bottom:6px;">Know the exact weight? Enter for accuracy</div>
+
+            <!-- SIMPLE DISH — size/quantity -->
+            <div id="snapSimpleView" style="display:none;">
+              <div style="font-size:14px;font-weight:500;color:#1A1A18;margin-bottom:12px;" id="snapSimpleName">Chicken shawarma</div>
+              <div style="font-size:11px;color:#5C5C52;margin-bottom:8px;">How many and what size?</div>
+              <div style="display:flex;gap:6px;margin-bottom:10px;">
+                <button onclick="setSnapQty(1)" id="qty1" class="btn-s" style="flex:1;padding:8px;font-size:12px;border-radius:8px;">1</button>
+                <button onclick="setSnapQty(2)" id="qty2" class="btn-s" style="flex:1;padding:8px;font-size:12px;border-radius:8px;">2</button>
+                <button onclick="setSnapQty(3)" id="qty3" class="btn-s" style="flex:1;padding:8px;font-size:12px;border-radius:8px;">3</button>
+              </div>
+              <div style="display:flex;gap:6px;margin-bottom:10px;">
+                <button onclick="setSnapSize('small')" id="sizeSmall" class="btn-s" style="flex:1;padding:8px;font-size:11px;border-radius:8px;">Small</button>
+                <button onclick="setSnapSize('medium')" id="sizeMedium" class="btn-s" style="flex:1;padding:8px;font-size:11px;border-radius:8px;">Medium</button>
+                <button onclick="setSnapSize('large')" id="sizeLarge" class="btn-s" style="flex:1;padding:8px;font-size:11px;border-radius:8px;">Large</button>
+              </div>
+            </div>
+
+            <!-- MACRO RESULT -->
+            <div style="background:#F5F2EE;border-radius:10px;padding:12px;margin:10px 0;">
+              <div style="font-family:'DM Serif Display',serif;font-size:40px;color:#1A1A18;line-height:1;" id="snapTotalCal">487 <span style="font-size:14px;color:#5C5C52;font-family:'DM Sans',sans-serif;">kcal</span></div>
+              <div style="display:flex;gap:16px;margin-top:8px;">
+                <div style="text-align:center;"><div style="font-size:15px;font-weight:500;color:#2D6A4F;" id="snapTotalP">42g</div><div style="font-size:10px;color:#5C5C52;text-transform:uppercase;">Protein</div></div>
+                <div style="text-align:center;"><div style="font-size:15px;font-weight:500;color:#2C5F8A;" id="snapTotalC">51g</div><div style="font-size:10px;color:#5C5C52;text-transform:uppercase;">Carbs</div></div>
+                <div style="text-align:center;"><div style="font-size:15px;font-weight:500;color:#C17D3C;" id="snapTotalF">8g</div><div style="font-size:10px;color:#5C5C52;text-transform:uppercase;">Fat</div></div>
+              </div>
+            </div>
+
+            <!-- NOT RIGHT? EDIT -->
+            <div id="snapEditView" style="display:none;background:#EDE9E3;border-radius:10px;padding:12px;margin-bottom:10px;">
+              <div style="font-size:11px;color:#5C5C52;margin-bottom:8px;">Edit macros manually</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;">
+                <div><div style="font-size:10px;color:#5C5C52;margin-bottom:3px;">Kcal</div><input type="number" id="snapEditCal" style="width:100%;padding:6px;border-radius:6px;border:0.5px solid #DDD9D0;font-size:12px;font-family:'DM Sans',sans-serif;background:#fff;outline:none;" oninput="updateSnapFromEdit()"></div>
+                <div><div style="font-size:10px;color:#5C5C52;margin-bottom:3px;">Protein</div><input type="number" id="snapEditP" style="width:100%;padding:6px;border-radius:6px;border:0.5px solid #DDD9D0;font-size:12px;font-family:'DM Sans',sans-serif;background:#fff;outline:none;" oninput="updateSnapFromEdit()"></div>
+                <div><div style="font-size:10px;color:#5C5C52;margin-bottom:3px;">Carbs</div><input type="number" id="snapEditC" style="width:100%;padding:6px;border-radius:6px;border:0.5px solid #DDD9D0;font-size:12px;font-family:'DM Sans',sans-serif;background:#fff;outline:none;" oninput="updateSnapFromEdit()"></div>
+                <div><div style="font-size:10px;color:#5C5C52;margin-bottom:3px;">Fat</div><input type="number" id="snapEditF" style="width:100%;padding:6px;border-radius:6px;border:0.5px solid #DDD9D0;font-size:12px;font-family:'DM Sans',sans-serif;background:#fff;outline:none;" oninput="updateSnapFromEdit()"></div>
+              </div>
+            </div>
+
             <div style="display:flex;gap:8px;margin-bottom:10px;">
-              <input type="text" id="snapFoodName" value="Grilled chicken with rice" style="flex:1;padding:8px 10px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:#F5F2EE;color:#1A1A18;">
-              <input type="number" id="snapGrams" placeholder="200g" style="width:70px;padding:8px 10px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:#F5F2EE;color:#1A1A18;">
+              <button onclick="toggleSnapEdit()" class="btn-s" style="font-size:12px;padding:8px 12px;">Not right? Edit</button>
+              <input type="text" id="snapFoodName" value="Grilled chicken with rice" style="flex:1;padding:8px 10px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:12px;font-family:'DM Sans',sans-serif;background:#F5F2EE;color:#1A1A18;outline:none;">
+            </div>
+            <div style="margin-bottom:10px;">
+              <select id="snapMealType" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:#F5F2EE;color:#1A1A18;outline:none;">
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch" selected>Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snack">Snack</option>
+              </select>
             </div>
             <button class="btn-p" onclick="addSnapToLog()">Add to log</button>
           </div>
@@ -1416,19 +1472,151 @@ function renderFoodLog() {
   container.innerHTML = html;
 }
 
+// ══════════ SNAP DEMO DATA ══════════
+const SNAP_DEMO_MEALS = [
+  {
+    name: 'Grilled chicken with rice',
+    type: 'complex',
+    mealType: 'lunch',
+    ingredients: [
+      { emoji: '🍗', name: 'Chicken breast', defaultG: 150, per100: { cal: 165, p: 31, c: 0, f: 3.6 } },
+      { emoji: '🍚', name: 'White rice (cooked)', defaultG: 200, per100: { cal: 130, p: 2.7, c: 28, f: 0.3 } }
+    ]
+  },
+  {
+    name: 'Chicken shawarma',
+    type: 'simple',
+    mealType: 'lunch',
+    sizes: { small: { cal: 380, p: 28, c: 38, f: 10 }, medium: { cal: 580, p: 38, c: 52, f: 18 }, large: { cal: 780, p: 50, c: 68, f: 24 } }
+  }
+];
+
+let snapState = {
+  meal: SNAP_DEMO_MEALS[0],
+  qty: 1,
+  size: 'medium',
+  editMode: false,
+  cal: 487, p: 42, c: 51, f: 8
+};
+
 function showSnapDemo() {
   document.getElementById('snapResult').classList.add('show');
+  snapState.meal = SNAP_DEMO_MEALS[0];
+  renderSnapResult();
+}
+
+function renderSnapResult() {
+  const meal = snapState.meal;
+  document.getElementById('snapFoodName').value = meal.name;
+
+  if (meal.type === 'complex') {
+    document.getElementById('snapComplexView').style.display = 'block';
+    document.getElementById('snapSimpleView').style.display = 'none';
+    // Set default values
+    meal.ingredients.forEach((ing, i) => {
+      const el = document.getElementById('ing' + i);
+      if (el) el.value = ing.defaultG;
+    });
+    recalcSnapMacros();
+  } else {
+    document.getElementById('snapComplexView').style.display = 'none';
+    document.getElementById('snapSimpleView').style.display = 'block';
+    document.getElementById('snapSimpleName').textContent = meal.name;
+    setSnapSize('medium');
+    setSnapQty(1);
+  }
+}
+
+function recalcSnapMacros() {
+  const meal = snapState.meal;
+  if (meal.type !== 'complex') return;
+  let cal = 0, p = 0, c = 0, f = 0;
+  meal.ingredients.forEach((ing, i) => {
+    const grams = parseFloat(document.getElementById('ing' + i)?.value) || ing.defaultG;
+    const ratio = grams / 100;
+    cal += ing.per100.cal * ratio;
+    p += ing.per100.p * ratio;
+    c += ing.per100.c * ratio;
+    f += ing.per100.f * ratio;
+  });
+  snapState.cal = Math.round(cal);
+  snapState.p = Math.round(p);
+  snapState.c = Math.round(c);
+  snapState.f = Math.round(f);
+  updateSnapDisplay();
+}
+
+function setSnapQty(n) {
+  snapState.qty = n;
+  [1,2,3].forEach(i => {
+    const btn = document.getElementById('qty' + i);
+    if (btn) btn.style.background = i === n ? '#2D6A4F' : '#1E1E1B';
+    if (btn) btn.style.color = i === n ? '#fff' : '#E8E4DC';
+  });
+  recalcSimpleMacros();
+}
+
+function setSnapSize(size) {
+  snapState.size = size;
+  ['small','medium','large'].forEach(s => {
+    const btn = document.getElementById('size' + s.charAt(0).toUpperCase() + s.slice(1));
+    if (btn) btn.style.background = s === size ? '#2D6A4F' : '#1E1E1B';
+    if (btn) btn.style.color = s === size ? '#fff' : '#E8E4DC';
+  });
+  recalcSimpleMacros();
+}
+
+function recalcSimpleMacros() {
+  const meal = snapState.meal;
+  if (meal.type !== 'simple') return;
+  const base = meal.sizes[snapState.size] || meal.sizes.medium;
+  snapState.cal = Math.round(base.cal * snapState.qty);
+  snapState.p = Math.round(base.p * snapState.qty);
+  snapState.c = Math.round(base.c * snapState.qty);
+  snapState.f = Math.round(base.f * snapState.qty);
+  updateSnapDisplay();
+}
+
+function updateSnapDisplay() {
+  document.getElementById('snapTotalCal').innerHTML = snapState.cal + ' <span style="font-size:14px;color:#5C5C52;font-family:\'DM Sans\',sans-serif;">kcal</span>';
+  document.getElementById('snapTotalP').textContent = snapState.p + 'g';
+  document.getElementById('snapTotalC').textContent = snapState.c + 'g';
+  document.getElementById('snapTotalF').textContent = snapState.f + 'g';
+  if (snapState.editMode) {
+    document.getElementById('snapEditCal').value = snapState.cal;
+    document.getElementById('snapEditP').value = snapState.p;
+    document.getElementById('snapEditC').value = snapState.c;
+    document.getElementById('snapEditF').value = snapState.f;
+  }
+}
+
+function toggleSnapEdit() {
+  snapState.editMode = !snapState.editMode;
+  const editView = document.getElementById('snapEditView');
+  editView.style.display = snapState.editMode ? 'block' : 'none';
+  if (snapState.editMode) {
+    document.getElementById('snapEditCal').value = snapState.cal;
+    document.getElementById('snapEditP').value = snapState.p;
+    document.getElementById('snapEditC').value = snapState.c;
+    document.getElementById('snapEditF').value = snapState.f;
+  }
+}
+
+function updateSnapFromEdit() {
+  snapState.cal = parseInt(document.getElementById('snapEditCal').value) || 0;
+  snapState.p = parseInt(document.getElementById('snapEditP').value) || 0;
+  snapState.c = parseInt(document.getElementById('snapEditC').value) || 0;
+  snapState.f = parseInt(document.getElementById('snapEditF').value) || 0;
+  updateSnapDisplay();
 }
 
 async function addSnapToLog() {
-  const name = document.getElementById('snapFoodName').value || 'Grilled chicken with rice';
-  const grams = parseFloat(document.getElementById('snapGrams').value) || null;
-  let cal = 487, protein = 42, carbs = 51, fat = 8;
-  if (grams) { const ratio = grams / 150; cal = Math.round(cal * ratio); protein = Math.round(protein * ratio); carbs = Math.round(carbs * ratio); fat = Math.round(fat * ratio); }
-  await addFoodLog(name, cal, protein, carbs, fat, 'lunch');
+  const name = document.getElementById('snapFoodName').value || snapState.meal.name;
+  const mealType = document.getElementById('snapMealType').value;
+  await addFoodLog(name, snapState.cal, snapState.p, snapState.c, snapState.f, mealType);
   document.getElementById('snapResult').classList.remove('show');
-  document.getElementById('snapFoodName').value = 'Grilled chicken with rice';
-  document.getElementById('snapGrams').value = '';
+  snapState.editMode = false;
+  document.getElementById('snapEditView').style.display = 'none';
 }
 
 function toggleManualLog() {
@@ -1922,21 +2110,26 @@ async function loadClientHistory() {
   const container = document.getElementById('historyContent');
   container.innerHTML = '<div style="text-align:center;padding:20px;color:#5A5A52;font-size:13px;">Loading...</div>';
 
-  // Get last 14 days
   const days = [];
   for (let i = 0; i < 14; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
+    const d = new Date(); d.setDate(d.getDate() - i);
     days.push(d.toISOString().split('T')[0]);
   }
-
   const startDate = days[days.length - 1];
+
   const { data: logs } = await sb.from('food_logs').select('*').eq('user_id', currentUser.id).gte('logged_at', startDate).order('logged_at', { ascending: false });
-
   const { data: checkins } = await sb.from('body_checkins').select('*').eq('user_id', currentUser.id).gte('checkin_date', startDate).order('checkin_date', { ascending: false });
+  const { data: workouts } = await sb.from('workout_plans').select('*').eq('client_id', currentUser.id).eq('completed', true);
 
-  let html = '<div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;">Last 14 days</div>';
+  // History switcher
+  let html = `
+    <div style="display:flex;background:#1E1E1B;border-radius:10px;padding:3px;margin-bottom:14px;">
+      <button onclick="showHistoryTab('food')" id="histFoodBtn" style="flex:1;padding:7px;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;background:#2A2A26;color:#E8E4DC;">🍽️ Food</button>
+      <button onclick="showHistoryTab('workout')" id="histWorkBtn" style="flex:1;padding:7px;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;background:transparent;color:#5A5A52;">💪 Workouts</button>
+    </div>
+    <div id="histFoodView">`;
 
+  let hasFoodData = false;
   days.forEach(dateStr => {
     const dayLogs = (logs || []).filter(l => l.logged_at.startsWith(dateStr));
     const checkin = (checkins || []).find(c => c.checkin_date === dateStr);
@@ -1944,9 +2137,8 @@ async function loadClientHistory() {
     const date = new Date(dateStr);
     const dayName = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
     const isToday = dateStr === new Date().toISOString().split('T')[0];
-
     if (dayLogs.length === 0 && !checkin) return;
-
+    hasFoodData = true;
     html += `<div style="background:#1E1E1B;border-radius:12px;padding:14px;margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${dayLogs.length>0?'10px':'0'};">
         <div style="font-size:13px;font-weight:500;color:#E8E4DC;">${isToday?'Today':dayName}</div>
@@ -1955,20 +2147,48 @@ async function loadClientHistory() {
           ${totalCal > 0 ? `<span style="font-size:12px;font-weight:500;color:#C17D3C;">${totalCal.toLocaleString()} kcal</span>` : ''}
         </div>
       </div>
-      ${dayLogs.map(log => `
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #2A2A26;font-size:12px;">
-          <span style="color:#A0A090;">${log.food_name}</span>
-          <span style="color:#5A5A52;">${log.calories} kcal</span>
-        </div>
-      `).join('')}
+      ${dayLogs.map(log => `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #2A2A26;font-size:12px;"><span style="color:#A0A090;">${log.food_name}</span><span style="color:#5A5A52;">${log.calories} kcal</span></div>`).join('')}
     </div>`;
   });
+  if (!hasFoodData) html += '<div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">No food logs yet.<br>Start logging meals to see history here.</div>';
+  html += '</div>';
 
-  if (html === '<div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;">Last 14 days</div>') {
-    html += '<div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">No history yet.<br>Start logging your meals to see your history here.</div>';
+  // WORKOUT HISTORY
+  html += '<div id="histWorkView" style="display:none;">';
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const completedByDay = {};
+  (workouts || []).forEach(w => {
+    const day = w.day_label || 'Unknown';
+    if (!completedByDay[day]) completedByDay[day] = [];
+    completedByDay[day].push(w);
+  });
+
+  if (Object.keys(completedByDay).length === 0) {
+    html += '<div style="text-align:center;padding:40px 20px;color:#5A5A52;font-size:13px;">No completed workouts yet.<br>Mark exercises as done in your plan to track them here.</div>';
+  } else {
+    const typeLabels = { push:'Push Day 💪', pull:'Pull Day 🏋️', legs:'Leg Day 🦵', fullbody:'Full Body 🔥' };
+    Object.entries(completedByDay).forEach(([day, exercises]) => {
+      const dayType = exercises[0]?.day_type;
+      html += `<div style="background:#1E1E1B;border-radius:12px;padding:14px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-size:13px;font-weight:500;color:#E8E4DC;">${day}</div>
+          ${dayType ? `<span style="font-size:11px;color:#2D6A4F;background:#1A2A1F;padding:3px 8px;border-radius:20px;">${typeLabels[dayType]||dayType}</span>` : ''}
+        </div>
+        ${exercises.map(ex => `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #2A2A26;font-size:12px;"><span style="color:#A0A090;">✓ ${ex.exercise_name}</span><span style="color:#5A5A52;">${ex.sets}×${ex.reps}${ex.weight_kg?' · '+ex.weight_kg+'kg':''}</span></div>`).join('')}
+      </div>`;
+    });
   }
-
+  html += '</div>';
   container.innerHTML = html;
+}
+
+function showHistoryTab(tab) {
+  document.getElementById('histFoodView').style.display = tab === 'food' ? 'block' : 'none';
+  document.getElementById('histWorkView').style.display = tab === 'workout' ? 'block' : 'none';
+  document.getElementById('histFoodBtn').style.background = tab === 'food' ? '#2A2A26' : 'transparent';
+  document.getElementById('histFoodBtn').style.color = tab === 'food' ? '#E8E4DC' : '#5A5A52';
+  document.getElementById('histWorkBtn').style.background = tab === 'workout' ? '#2A2A26' : 'transparent';
+  document.getElementById('histWorkBtn').style.color = tab === 'workout' ? '#E8E4DC' : '#5A5A52';
 }
 
 // ══════════ TRAINER HISTORY ══════════
@@ -2107,7 +2327,123 @@ async function saveWeightCheckIn() {
   updateClientProfile();
 }
 
-// ══════════ SHOW TRAINER TAB (UPDATED) ══════════
+// ══════════ AI MEAL RECOMMENDATIONS ══════════
+let mealRecsCache = {}; // { clientId: { generated_at, recs } }
+
+async function loadMealSuggestions() {
+  if (!selectedClient) return;
+  const container = document.getElementById('mealSuggestionsContainer');
+  if (!container) return;
+
+  // Check cache
+  const cached = mealRecsCache[selectedClient.id];
+  if (cached) {
+    renderMealSuggestions(cached.recs);
+    return;
+  }
+
+  container.innerHTML = '<div style="color:#5A5A52;font-size:12px;">✨ Generating meal suggestions...</div>';
+
+  // Get client profile for stats
+  const { data: clientProfile } = await sb.from('profiles').select('*').eq('id', selectedClient.id).single();
+  const goal = clientProfile?.goal || 'maintain';
+  const calorieGoal = clientProfile?.calorie_goal || 1800;
+  const weight = clientProfile?.weight || 70;
+  const goalLabels = { lose: 'fat loss', muscle: 'muscle building', maintain: 'maintenance', health: 'general health' };
+
+  const prompt = `You are a professional nutritionist creating meal recommendations for a fitness app client.
+
+Client stats:
+- Name: ${selectedClient.name}
+- Goal: ${goalLabels[goal]}
+- Daily calorie target: ${calorieGoal} kcal
+- Weight: ${weight}kg
+
+Generate exactly 3 meal options for EACH of these 4 meal types: Breakfast, Lunch, Dinner, Snack.
+Total = 12 meal suggestions.
+
+Rules:
+- Each meal should fit the client's goal (${goalLabels[goal]})
+- Include UAE/Middle Eastern options alongside Western options for variety
+- Keep meals practical and easy to prepare
+- Each meal must have realistic macros
+
+Return ONLY valid JSON in this exact format, no other text:
+{
+  "breakfast": [
+    {"name": "meal name", "calories": 350, "protein": 30, "carbs": 40, "fat": 8, "description": "brief description"},
+    {"name": "meal name", "calories": 320, "protein": 25, "carbs": 42, "fat": 7, "description": "brief description"},
+    {"name": "meal name", "calories": 380, "protein": 28, "carbs": 45, "fat": 9, "description": "brief description"}
+  ],
+  "lunch": [...3 meals],
+  "dinner": [...3 meals],
+  "snack": [...3 meals]
+}`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const recs = JSON.parse(clean);
+
+    // Cache it
+    mealRecsCache[selectedClient.id] = { generated_at: Date.now(), recs };
+    renderMealSuggestions(recs);
+
+  } catch (e) {
+    console.error('AI meal recs error:', e);
+    container.innerHTML = '<div style="color:#B54040;font-size:12px;">Could not generate suggestions. Check your connection and try again.</div>';
+  }
+}
+
+function renderMealSuggestions(recs) {
+  const container = document.getElementById('mealSuggestionsContainer');
+  if (!container || !recs) return;
+
+  const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
+  const mealEmojis = { breakfast: '🌅', lunch: '☀️', dinner: '🌙', snack: '🍎' };
+
+  let html = '';
+  mealTypes.forEach(type => {
+    if (!recs[type]) return;
+    html += `<div style="margin-bottom:12px;">
+      <div style="font-size:10px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">${mealEmojis[type]} ${type}</div>`;
+    recs[type].forEach((meal, i) => {
+      html += `<div style="background:#111110;border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:500;color:#E8E4DC;">${meal.name}</div>
+          <div style="font-size:10px;color:#5A5A52;margin-top:2px;">${meal.calories} kcal · P${meal.protein}g · C${meal.carbs}g · F${meal.fat}g</div>
+          <div style="font-size:10px;color:#3A3A36;margin-top:1px;">${meal.description}</div>
+        </div>
+        <button onclick="addSuggestedMeal('${type}','${meal.name.replace(/'/g,"\\'")}',${meal.calories},${meal.protein},${meal.carbs},${meal.fat})" style="background:#2D6A4F;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:8px;flex-shrink:0;">+ Add</button>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function addSuggestedMeal(mealType, name, cal, protein, carbs, fat) {
+  if (!weeklyMeals[currentPlanDay]) weeklyMeals[currentPlanDay] = [];
+  weeklyMeals[currentPlanDay].push({ meal_type: mealType, description: name, calories: cal, protein });
+  showToast('✓ ' + name + ' added to ' + currentPlanDay);
+  renderPlanBuilder();
+}
+
+async function loadMealRecommendations() {
+  await loadMealSuggestions();
+}
 
 function showTrainerTab(tab) {
   document.querySelectorAll('#screen-trainer .screen').forEach(s => s.classList.remove('active'));
@@ -2323,7 +2659,17 @@ function renderPlanBuilder() {
     <div id="planMealView" style="display:${currentPlanTab==='meal'?'block':'none'};">
       <div style="font-size:11px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">${currentPlanDay} — Meals</div>
       ${mealHtml}
-      <!-- ADD MEALS FOR THE DAY -->
+
+      <!-- AI MEAL RECOMMENDATIONS -->
+      <div style="background:#1A2A1F;border-radius:12px;padding:14px;margin-top:10px;border:0.5px solid #2D6A4F;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-size:11px;color:#2D6A4F;text-transform:uppercase;letter-spacing:0.06em;">✨ AI suggestions for ${clientName}</div>
+          <button onclick="loadMealSuggestions()" style="background:#2D6A4F;color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Generate</button>
+        </div>
+        <div id="mealSuggestionsContainer" style="font-size:12px;color:#5A5A52;line-height:1.6;">Tap Generate to get AI meal suggestions based on ${clientName}'s calorie goal and stats.</div>
+      </div>
+
+      <!-- MANUAL ADD -->
       <div style="background:#1A1A18;border-radius:12px;padding:14px;margin-top:10px;border:0.5px solid #2A2A26;">
         <div style="font-size:11px;color:#C9B99A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">+ Add meal to ${currentPlanDay}</div>
         <select id="addMealType" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:8px;outline:none;">
