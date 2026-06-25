@@ -1991,7 +1991,7 @@ async function loadTrainerClients() {
     const color = colors[i%colors.length];
     const tag = loggedToday ? '<span class="tag tag-g">On track</span>' : '<span class="tag tag-r">No log</span>';
     const calText = loggedToday ? totalCal.toLocaleString()+' kcal today' : "Hasn't logged today";
-    const safeName = (client.full_name||'Client').replace(/'/g,"\'");
+    const safeName = (client.full_name||'Client').replace(/[^a-zA-Z0-9 ]/g,'');
     html += `<div class="client-item" onclick="openClientDetail('${client.id}','${safeName}','${color}')">
       <div class="c-avatar" style="background:${color};">${initial}</div>
       <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:#fff;">${client.full_name||'Unknown'}</div>
@@ -2629,7 +2629,7 @@ function renderMealSuggestions(recs) {
           <div style="font-size:10px;color:#5A5A52;margin-top:2px;">${meal.calories} kcal · P${meal.protein}g · C${meal.carbs}g · F${meal.fat}g</div>
           <div style="font-size:10px;color:#3A3A36;margin-top:1px;">${meal.description}</div>
         </div>
-        <button onclick="addSuggestedMeal('${type}','${meal.name.replace(/'/g,"\\'")}',${meal.calories},${meal.protein},${meal.carbs},${meal.fat})" style="background:#2D6A4F;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:8px;flex-shrink:0;">+ Add</button>
+        <button onclick="addSuggestedMeal('${type}','${meal.name.replace(/[^a-zA-Z0-9 ]/g,'')}',${meal.calories},${meal.protein},${meal.carbs},${meal.fat})" style="background:#2D6A4F;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:8px;flex-shrink:0;">+ Add</button>
       </div>`;
     });
     html += '</div>';
