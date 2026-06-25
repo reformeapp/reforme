@@ -1362,7 +1362,26 @@ async function finishOnboarding() {
 // ══════════ CLIENT APP ══════════
 async function loadClientApp() {
   try {
-    goTo('screen-client');
+    // Explicitly show client screen
+    document.querySelectorAll('#mainApp > .screen').forEach(s => {
+      s.style.display = 'none';
+      s.classList.remove('active');
+    });
+    const clientScreen = document.getElementById('screen-client');
+    if (clientScreen) { clientScreen.style.display = 'flex'; clientScreen.classList.add('active'); }
+
+    // Show dashboard tab
+    document.querySelectorAll('#screen-client .screen').forEach(s => {
+      s.style.display = 'none';
+      s.classList.remove('active');
+    });
+    const dashTab = document.getElementById('c-dashboard');
+    if (dashTab) { dashTab.style.display = 'flex'; dashTab.classList.add('active'); }
+
+    document.querySelectorAll('#screen-client .nav-btn').forEach(b => b.classList.remove('active'));
+    const dashNav = document.getElementById('cnav-dashboard');
+    if (dashNav) dashNav.classList.add('active');
+
     updateClientGreeting();
     await updateDashboardStats();
     loadWaterTracker();
@@ -1373,7 +1392,7 @@ async function loadClientApp() {
     checkWeeklyWeightPrompt();
   } catch(e) {
     console.error('loadClientApp error:', e);
-    showToast('Error loading app. Please refresh.');
+    showToast('Error loading. Please refresh.');
   }
 }
 
@@ -1929,29 +1948,40 @@ async function sendClientMessage() {
 
 // ══════════ TRAINER APP ══════════
 async function loadTrainerApp() {
-  try {
-    goTo('screen-trainer');
-    // Make sure clients tab is visible
-    document.querySelectorAll('#screen-trainer .screen').forEach(s => s.classList.remove('active'));
-    const clientsTab = document.getElementById('t-clients');
-    if (clientsTab) clientsTab.classList.add('active');
-    document.querySelectorAll('#screen-trainer .nav-btn').forEach(b => b.classList.remove('active'));
-    const clientsNav = document.getElementById('tnav-clients');
-    if (clientsNav) clientsNav.classList.add('active');
-  } catch(e) {
-    console.error('goTo trainer error:', e);
+  // Hide all top-level screens
+  document.querySelectorAll('#mainApp > .screen').forEach(s => {
+    s.style.display = 'none';
+    s.classList.remove('active');
+  });
+  
+  // Show trainer screen
+  const trainerScreen = document.getElementById('screen-trainer');
+  if (trainerScreen) {
+    trainerScreen.style.display = 'flex';
+    trainerScreen.classList.add('active');
   }
-  try {
-    updateTrainerProfile();
-  } catch(e) {
-    console.error('updateTrainerProfile error:', e);
+  
+  // Show clients tab inside trainer
+  document.querySelectorAll('#screen-trainer .screen').forEach(s => {
+    s.style.display = 'none';
+    s.classList.remove('active');
+  });
+  const clientsTab = document.getElementById('t-clients');
+  if (clientsTab) {
+    clientsTab.style.display = 'flex';
+    clientsTab.classList.add('active');
   }
-  try {
-    await loadTrainerClients();
-  } catch(e) {
-    console.error('loadTrainerClients error:', e);
+  
+  // Set active nav
+  document.querySelectorAll('#screen-trainer .nav-btn').forEach(b => b.classList.remove('active'));
+  const clientsNav = document.getElementById('tnav-clients');
+  if (clientsNav) clientsNav.classList.add('active');
+
+  try { updateTrainerProfile(); } catch(e) { console.error('profile err:', e); }
+  try { await loadTrainerClients(); } catch(e) {
+    console.error('clients err:', e);
     const c = document.getElementById('clientList');
-    if (c) c.innerHTML = '<div style="padding:20px;color:#B54040;font-size:13px;text-align:center;">Error loading clients. Tap Clients tab to retry.</div>';
+    if (c) c.innerHTML = '<div style="padding:20px;color:#B54040;font-size:13px;">Error: ' + e.message + '</div>';
   }
 }
 
@@ -2203,9 +2233,12 @@ function goTo(screenId) {
 
 // ══════════ SHOW CLIENT TAB (UPDATED) ══════════
 function showClientTab(tab) {
-  document.querySelectorAll('#screen-client .screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#screen-client .screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
   const el = document.getElementById('c-' + tab);
-  if (el) el.classList.add('active');
+  if (el) { el.classList.add('active'); el.style.display = 'flex'; }
   document.querySelectorAll('#screen-client .nav-btn').forEach(b => b.classList.remove('active'));
   const navEl = document.getElementById('cnav-' + tab);
   if (navEl) navEl.classList.add('active');
@@ -2673,9 +2706,12 @@ async function loadMealRecommendations() {
 }
 
 function showTrainerTab(tab) {
-  document.querySelectorAll('#screen-trainer .screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#screen-trainer .screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
   const el = document.getElementById('t-' + tab);
-  if (el) el.classList.add('active');
+  if (el) { el.classList.add('active'); el.style.display = 'flex'; }
   document.querySelectorAll('#screen-trainer .nav-btn').forEach(b => b.classList.remove('active'));
   const navEl = document.getElementById('tnav-' + tab);
   if (navEl) navEl.classList.add('active');
