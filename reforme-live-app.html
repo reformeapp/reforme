@@ -293,6 +293,7 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
       <input class="field" type="password" id="loginPassword" placeholder="••••••••">
       <div style="text-align:right;margin-top:-8px;margin-bottom:20px;"><button class="btn-ghost" style="font-size:12px;">Forgot password?</button></div>
       <button class="btn-p" id="loginBtn" onclick="handleLogin()">Sign in</button>
+      <button onclick="testConnection()" style="background:transparent;border:none;color:#3A3A36;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;padding:8px;margin-top:4px;">Test connection</button>
     </div>
     <div class="auth-switch">Don't have an account? <span onclick="goTo('screen-signup')">Sign up</span></div>
   </div>
@@ -1160,6 +1161,31 @@ async function loadProfile() {
 }
 
 // ══════════ AUTH ══════════
+async function testConnection() {
+  const err = document.getElementById('loginError');
+  err.textContent = 'Testing connection...';
+  err.style.color = '#C9B99A';
+  err.classList.add('show');
+  try {
+    const res = await fetch('https://mzpvainvmhbpjyambwap.supabase.co/rest/v1/profiles?limit=1', {
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cHZhaW52bWhicGp5YW1id2FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTI0NzIsImV4cCI6MjA5Nzg4ODQ3Mn0.evlBxIC8K-fplIrEIS8JsxMN8QSvmfr5q5r77JX-Gm0',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cHZhaW52bWhicGp5YW1id2FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTI0NzIsImV4cCI6MjA5Nzg4ODQ3Mn0.evlBxIC8K-fplIrEIS8JsxMN8QSvmfr5q5r77JX-Gm0'
+      }
+    });
+    if (res.ok) {
+      err.textContent = '✓ Database connected (' + res.status + '). Try logging in.';
+      err.style.color = '#2D6A4F';
+    } else {
+      err.textContent = 'Database error: ' + res.status + ' ' + res.statusText;
+      err.style.color = '#B54040';
+    }
+  } catch(e) {
+    err.textContent = 'Network error: ' + e.message + '. Check your internet.';
+    err.style.color = '#B54040';
+  }
+}
+
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
