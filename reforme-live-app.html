@@ -439,7 +439,8 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
           <div class="streak-badge"><div class="streak-num" id="streakNum">🔥 0</div><div class="streak-text" id="streakText">day streak — start logging!</div></div>
         </div>
 
-        <div class="card" style="padding:12px 14px;">
+        <!-- PLAN PROGRESS -->
+        <div id="dashPlanProgress" style="margin-bottom:10px;display:none;"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
             <div style="font-size:12px;font-weight:500;color:#1A1A18;">Daily water</div>
             <div style="font-size:11px;color:#5A5A52;" id="waterCountLabel">0 / 8 glasses</div>
@@ -1320,6 +1321,8 @@ function updateClientGreeting() {
 
 async function updateDashboardStats() {
   const today = new Date().toISOString().split('T')[0];
+  const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+
   const { data: logs } = await sb.from('food_logs').select('*').eq('user_id', currentUser.id).gte('logged_at', today);
   todayFoodLogs = logs || [];
   const totalCal = todayFoodLogs.reduce((s, l) => s + (l.calories || 0), 0);
@@ -1328,33 +1331,85 @@ async function updateDashboardStats() {
   const totalFat = todayFoodLogs.reduce((s, l) => s + (l.fat || 0), 0);
   const goal = currentProfile?.calorie_goal || 1800;
   const pct = Math.min(100, Math.round((totalCal / goal) * 100));
-  document.getElementById('todayCal').textContent = totalCal.toLocaleString();
-  document.getElementById('remCal').textContent = Math.max(0, goal - totalCal).toLocaleString();
-  document.getElementById('calGoalLabel').textContent = 'Goal — ' + goal.toLocaleString() + ' kcal · Based on your stats';
-  document.getElementById('calBar').style.width = pct + '%';
+
+  // Update calorie display
+  const todayCalEl = document.getElementById('todayCal');
+  const remCalEl = document.getElementById('remCal');
+  const calGoalEl = document.getElementById('calGoalLabel');
+  const calBarEl = document.getElementById('calBar');
+  if (todayCalEl) todayCalEl.textContent = totalCal.toLocaleString();
+  if (remCalEl) remCalEl.textContent = Math.max(0, goal - totalCal).toLocaleString();
+  if (calGoalEl) calGoalEl.textContent = 'Goal — ' + goal.toLocaleString() + ' kcal · Based on your stats';
+  if (calBarEl) calBarEl.style.width = pct + '%';
+
+  // Macros
   const proteinGoal = Math.round(goal * 0.3 / 4);
   const carbsGoal = Math.round(goal * 0.4 / 4);
   const fatGoal = Math.round(goal * 0.3 / 9);
-  document.getElementById('todayProtein').textContent = Math.round(totalProtein) + 'g';
-  document.getElementById('todayCarbs').textContent = Math.round(totalCarbs) + 'g';
-  document.getElementById('todayFat').textContent = Math.round(totalFat) + 'g';
-  document.getElementById('proteinBar').style.width = Math.min(100, (totalProtein/proteinGoal)*100) + '%';
-  document.getElementById('carbsBar').style.width = Math.min(100, (totalCarbs/carbsGoal)*100) + '%';
-  document.getElementById('fatBar').style.width = Math.min(100, (totalFat/fatGoal)*100) + '%';
-  // Streak calculation
+  const pEl = document.getElementById('todayProtein');
+  const cEl = document.getElementById('todayCarbs');
+  const fEl = document.getElementById('todayFat');
+  const pbEl = document.getElementById('proteinBar');
+  const cbEl = document.getElementById('carbsBar');
+  const fbEl = document.getElementById('fatBar');
+  if (pEl) pEl.textContent = Math.round(totalProtein) + 'g';
+  if (cEl) cEl.textContent = Math.round(totalCarbs) + 'g';
+  if (fEl) fEl.textContent = Math.round(totalFat) + 'g';
+  if (pbEl) pbEl.style.width = Math.min(100, (totalProtein/proteinGoal)*100) + '%';
+  if (cbEl) cbEl.style.width = Math.min(100, (totalCarbs/carbsGoal)*100) + '%';
+  if (fbEl) fbEl.style.width = Math.min(100, (totalFat/fatGoal)*100) + '%';
+
+  // Streak
+  const sNumEl = document.getElementById('streakNum');
+  const sTxtEl = document.getElementById('streakText');
   const streak = todayFoodLogs.length > 0 ? 1 : 0;
-  document.getElementById('streakNum').textContent = '🔥 ' + streak;
-  document.getElementById('streakText').textContent = streak > 0 ? 'day streak — keep it going!' : 'Start logging to build your streak!';
+  if (sNumEl) sNumEl.textContent = '🔥 ' + streak;
+  if (sTxtEl) sTxtEl.textContent = streak > 0 ? 'day streak — keep it going!' : 'Start logging to build your streak!';
+
+  // Plan completion for today
+  const { data: todayMeals } = await sb.from('meal_plans').select('*').eq('client_id', currentUser.id).eq('day_label', dayName);
+  const { data: todayWorkouts } = await sb.from('workout_plans').select('*').eq('client_id', currentUser.id).eq('day_label', dayName);
+  const totalMeals = (todayMeals || []).length;
+  const doneMeals = (todayMeals || []).filter(m => m.completed).length;
+  const totalWorkouts = (todayWorkouts || []).length;
+  const doneWorkouts = (todayWorkouts || []).filter(w => w.completed).length;
+
+  // Show plan progress on dashboard if plans exist
+  const planProgressEl = document.getElementById('dashPlanProgress');
+  if (planProgressEl) {
+    if (totalMeals > 0 || totalWorkouts > 0) {
+      planProgressEl.style.display = 'block';
+      planProgressEl.innerHTML = `
+        <div style="display:flex;gap:10px;">
+          ${totalMeals > 0 ? `<div style="flex:1;background:#1E1E1B;border-radius:10px;padding:10px 12px;">
+            <div style="font-size:10px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Meals today</div>
+            <div style="font-size:18px;font-weight:400;color:${doneMeals===totalMeals?'#2D6A4F':'#fff'};font-family:'DM Serif Display',serif;">${doneMeals}/${totalMeals}</div>
+            <div style="height:2px;background:#111;border-radius:2px;margin-top:6px;overflow:hidden;"><div style="width:${totalMeals>0?Math.round((doneMeals/totalMeals)*100):0}%;height:100%;background:#2D6A4F;border-radius:2px;transition:width 0.4s;"></div></div>
+          </div>` : ''}
+          ${totalWorkouts > 0 ? `<div style="flex:1;background:#1E1E1B;border-radius:10px;padding:10px 12px;">
+            <div style="font-size:10px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Workout today</div>
+            <div style="font-size:18px;font-weight:400;color:${doneWorkouts===totalWorkouts?'#2D6A4F':'#fff'};font-family:'DM Serif Display',serif;">${doneWorkouts}/${totalWorkouts}</div>
+            <div style="height:2px;background:#111;border-radius:2px;margin-top:6px;overflow:hidden;"><div style="width:${totalWorkouts>0?Math.round((doneWorkouts/totalWorkouts)*100):0}%;height:100%;background:#2D6A4F;border-radius:2px;transition:width 0.4s;"></div></div>
+          </div>` : ''}
+        </div>`;
+    } else {
+      planProgressEl.style.display = 'none';
+    }
+  }
+
   // BMI
   if (currentProfile?.weight && currentProfile?.height) {
     const bmi = (currentProfile.weight / Math.pow(currentProfile.height / 100, 2)).toFixed(1);
     const status = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese';
     const color = bmi < 18.5 ? '#2C5F8A' : bmi < 25 ? '#2D6A4F' : bmi < 30 ? '#C17D3C' : '#B54040';
-    document.getElementById('profileWeight').textContent = currentProfile.weight + 'kg';
-    document.getElementById('profileHeight').textContent = currentProfile.height + 'cm';
-    document.getElementById('profileBMI').textContent = bmi;
-    document.getElementById('profileBMIStatus').textContent = status;
-    document.getElementById('profileBMIStatus').style.color = color;
+    const pwEl = document.getElementById('profileWeight');
+    const phEl = document.getElementById('profileHeight');
+    const pbmiEl = document.getElementById('profileBMI');
+    const pbmiSEl = document.getElementById('profileBMIStatus');
+    if (pwEl) pwEl.textContent = currentProfile.weight + 'kg';
+    if (phEl) phEl.textContent = currentProfile.height + 'cm';
+    if (pbmiEl) pbmiEl.textContent = bmi;
+    if (pbmiSEl) { pbmiSEl.textContent = status; pbmiSEl.style.color = color; }
   }
 }
 
@@ -1691,6 +1746,11 @@ async function toggleClientPlan(el, table, id) {
   check.className = 'plan-check' + (newStatus ? ' done' : '');
   check.innerHTML = newStatus ? '<i class="ti ti-check" style="font-size:11px;"></i>' : '';
   await sb.from(table).update({ completed: newStatus }).eq('id', id);
+  // Refresh dashboard stats
+  if (document.getElementById('c-dashboard').classList.contains('active')) {
+    await updateDashboardStats();
+    generateAIInsight();
+  }
 }
 
 async function loadClientMessages() {
@@ -2531,7 +2591,8 @@ const WORKOUT_TEMPLATES = {
 };
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-let currentPlanDay = 'Monday';
+const DAY_NAMES_JS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+let currentPlanDay = DAY_NAMES_JS[new Date().getDay()];
 let currentPlanTab = 'workout';
 let weeklyPlan = {}; // { Monday: { type: 'push', exercises: [...] }, ... }
 let weeklyMeals = {}; // { Monday: [ { type, desc, cal, protein } ] }
@@ -2571,8 +2632,11 @@ function renderPlanBuilder() {
   const dayTabs = DAYS.map(d => {
     const hasWorkout = weeklyPlan[d]?.exercises?.length > 0;
     const hasMeals = weeklyMeals[d]?.length > 0;
+    const isToday = d === DAY_NAMES_JS[new Date().getDay()];
+    const isSelected = currentPlanDay === d;
     const dot = (hasWorkout || hasMeals) ? `<div style="width:5px;height:5px;border-radius:50%;background:#2D6A4F;margin:0 auto;margin-top:3px;"></div>` : '';
-    return `<button onclick="setPlanDay('${d}')" style="flex:1;padding:8px 4px;border:none;border-radius:8px;font-size:10px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;background:${currentPlanDay===d?'#2A2A26':'transparent'};color:${currentPlanDay===d?'#E8E4DC':'#5A5A52'};">${d.substring(0,3).toUpperCase()}${dot}</button>`;
+    const todayPin = isToday && !isSelected ? '<span style="font-size:8px;color:#C9B99A;display:block;">TODAY</span>' : '';
+    return `<button onclick="setPlanDay('${d}')" style="flex:1;padding:6px 2px;border:none;border-radius:8px;font-size:10px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;background:${isSelected?'#2A2A26':isToday?'#1A2A1F':'transparent'};color:${isSelected?'#E8E4DC':isToday?'#C9B99A':'#5A5A52'};border:${isToday&&!isSelected?'0.5px solid #2D6A4F':'none'};">${d.substring(0,3).toUpperCase()}${todayPin}${dot}</button>`;
   }).join('');
 
   const templateBtns = Object.entries(WORKOUT_TEMPLATES).map(([key, t]) => {
