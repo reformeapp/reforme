@@ -2175,10 +2175,15 @@ async function openClientDetail(clientId, clientName, avatarColor) {
 
   // Use dedicated detail screen
   document.getElementById('t-detail-content').innerHTML = detailHtml;
-  document.querySelectorAll('#screen-trainer .screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('t-detail').classList.add('active');
+  document.querySelectorAll('#screen-trainer .screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const detailEl = document.getElementById('t-detail');
+  if (detailEl) { detailEl.classList.add('active'); detailEl.style.display = 'flex'; }
   document.querySelectorAll('#screen-trainer .nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tnav-clients').classList.add('active');
+  const clientsNav = document.getElementById('tnav-clients');
+  if (clientsNav) clientsNav.classList.add('active');
 
   // Load today's workout for this client
   const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
