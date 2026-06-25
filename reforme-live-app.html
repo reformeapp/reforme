@@ -3275,6 +3275,20 @@ const VAPID_KEY = "BLdjzhhu3UKd5JDmlIUqv4PVTr_GB3gri8CZvgP4zE9Ffu4XbCCNME_r9PZ09
 let fbMessaging = null;
 
 async function initFirebase() {
+  // Load Firebase scripts dynamically so they don't block app loading
+  if (typeof firebase === 'undefined') {
+    await new Promise((resolve) => {
+      const s1 = document.createElement('script');
+      s1.src = 'https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js';
+      s1.onload = () => {
+        const s2 = document.createElement('script');
+        s2.src = 'https://www.gstatic.com/firebasejs/12.15.0/firebase-messaging-compat.js';
+        s2.onload = resolve;
+        document.head.appendChild(s2);
+      };
+      document.head.appendChild(s1);
+    });
+  }
   try {
     if (typeof firebase === 'undefined') {
       console.log('Firebase not loaded yet');
@@ -3433,8 +3447,5 @@ window.addEventListener('load', () => {
   waitForSupabase(async () => { await init(); });
 });
 </script>
-<!-- Firebase loaded after app so it doesn't block page load -->
-<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-messaging-compat.js"></script>
 </body>
 </html>
