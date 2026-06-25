@@ -441,6 +441,27 @@ select.field{background:#1E1E1B;color:#E8E4DC;}
 
         <!-- PLAN PROGRESS -->
         <div id="dashPlanProgress" style="margin-bottom:10px;display:none;"></div>
+
+        <!-- ACTUAL VS TARGET -->
+        <div class="card-dark" style="margin-bottom:10px;padding:0;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;">
+            <div style="padding:14px 12px;border-right:0.5px solid #2A2A26;">
+              <div style="font-size:9px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Actual</div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:#3A3A36;">Calories</span><span style="font-size:12px;font-weight:500;color:#fff;" id="avt-cal">0</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:#3A3A36;">Protein</span><span style="font-size:12px;font-weight:500;color:#fff;" id="avt-p">0g</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:#3A3A36;">Carbs</span><span style="font-size:12px;font-weight:500;color:#fff;" id="avt-c">0g</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="font-size:11px;color:#3A3A36;">Fat</span><span style="font-size:12px;font-weight:500;color:#fff;" id="avt-f">0g</span></div>
+            </div>
+            <div style="padding:14px 12px;">
+              <div style="font-size:9px;color:#2D6A4F;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Target</div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:#3A3A36;">Calories</span><span style="font-size:12px;font-weight:500;color:#2D6A4F;" id="avt-tcal">0</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:#3A3A36;">Protein</span><span style="font-size:12px;font-weight:500;color:#2D6A4F;" id="avt-tp">0g</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:#3A3A36;">Carbs</span><span style="font-size:12px;font-weight:500;color:#2D6A4F;" id="avt-tc">0g</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="font-size:11px;color:#3A3A36;">Fat</span><span style="font-size:12px;font-weight:500;color:#2D6A4F;" id="avt-tf">0g</span></div>
+            </div>
+          </div>
+        </div>
+
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
             <div style="font-size:12px;font-weight:500;color:#1A1A18;">Daily water</div>
             <div style="font-size:11px;color:#5A5A52;" id="waterCountLabel">0 / 8 glasses</div>
@@ -1347,10 +1368,26 @@ async function updateDashboardStats() {
   if (calGoalEl) calGoalEl.textContent = 'Goal — ' + goal.toLocaleString() + ' kcal · Based on your stats';
   if (calBarEl) calBarEl.style.width = pct + '%';
 
-  // Macros
+  // Update Actual vs Target card
   const proteinGoal = Math.round(goal * 0.3 / 4);
   const carbsGoal = Math.round(goal * 0.4 / 4);
   const fatGoal = Math.round(goal * 0.3 / 9);
+  const avtCal = document.getElementById('avt-cal');
+  const avtP = document.getElementById('avt-p');
+  const avtC = document.getElementById('avt-c');
+  const avtF = document.getElementById('avt-f');
+  const avtTCal = document.getElementById('avt-tcal');
+  const avtTP = document.getElementById('avt-tp');
+  const avtTC = document.getElementById('avt-tc');
+  const avtTF = document.getElementById('avt-tf');
+  if (avtCal) avtCal.textContent = totalCal.toLocaleString();
+  if (avtP) avtP.textContent = Math.round(totalProtein) + 'g';
+  if (avtC) avtC.textContent = Math.round(totalCarbs) + 'g';
+  if (avtF) avtF.textContent = Math.round(totalFat) + 'g';
+  if (avtTCal) avtTCal.textContent = goal.toLocaleString();
+  if (avtTP) avtTP.textContent = proteinGoal + 'g';
+  if (avtTC) avtTC.textContent = carbsGoal + 'g';
+  if (avtTF) avtTF.textContent = fatGoal + 'g';
   const pEl = document.getElementById('todayProtein');
   const cEl = document.getElementById('todayCarbs');
   const fEl = document.getElementById('todayFat');
@@ -1750,11 +1787,47 @@ async function toggleClientPlan(el, table, id) {
   const newStatus = !isDone;
   check.className = 'plan-check' + (newStatus ? ' done' : '');
   check.innerHTML = newStatus ? '<i class="ti ti-check" style="font-size:11px;"></i>' : '';
+
   const { error } = await sb.from(table).update({ completed: newStatus }).eq('id', id);
   if (error) { showToast('Error saving. Try again.'); return; }
-  // Always refresh dashboard stats in background
+
+  // If checking a MEAL plan item — auto log it as food
+  if (table === 'meal_plans' && newStatus) {
+    const { data: planItem } = await sb.from('meal_plans').select('*').eq('id', id).single();
+    if (planItem && planItem.calories > 0) {
+      // Check if already logged this meal type today
+      const today = new Date().toISOString().split('T')[0];
+      const { data: existing } = await sb.from('food_logs').select('id').eq('user_id', currentUser.id).eq('meal_type', planItem.meal_type).gte('logged_at', today);
+      if (!existing || existing.length === 0) {
+        // Auto-log the planned meal
+        await sb.from('food_logs').insert({
+          user_id: currentUser.id,
+          food_name: planItem.description,
+          calories: planItem.calories,
+          protein: planItem.protein || 0,
+          carbs: 0,
+          fat: 0,
+          meal_type: planItem.meal_type
+        });
+        showToast('✓ ' + (planItem.meal_type || 'Meal') + ' logged to your food diary');
+      }
+    }
+  } else if (table === 'meal_plans' && !newStatus) {
+    // Unchecking — remove auto-logged entry if it exists
+    const { data: planItem } = await sb.from('meal_plans').select('*').eq('id', id).single();
+    if (planItem) {
+      const today = new Date().toISOString().split('T')[0];
+      await sb.from('food_logs').delete().eq('user_id', currentUser.id).eq('food_name', planItem.description).gte('logged_at', today);
+    }
+  }
+
+  // Always refresh dashboard
   await updateDashboardStats();
   generateAIInsight();
+  // Refresh food log if on log tab
+  if (document.getElementById('c-log').classList.contains('active')) {
+    await loadFoodLog();
+  }
 }
 
 async function loadClientMessages() {
@@ -1838,7 +1911,8 @@ async function loadTrainerClients() {
   const clientList = clients || [];
   document.getElementById('totalClients').textContent = clientList.length;
   document.getElementById('trainerClientsLabel').textContent = currentProfile?.full_name?.split(' ')[0] + ' · ' + clientList.length + ' active clients';
-  document.getElementById('trainerClientCount').textContent = clientList.length + ' clients';
+  const countEl = document.getElementById('trainerClientCount');
+  if (countEl) countEl.textContent = clientList.length + ' clients';
   let onTrack = 0, attention = 0;
   const today = new Date().toISOString().split('T')[0];
   const container = document.getElementById('clientList');
