@@ -6,7 +6,7 @@
 <title>Reformé</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" async></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -1071,15 +1071,12 @@ let editingFoodId = null;
 async function init() {
   try {
     if (!sb) {
-      document.getElementById('loadingScreen').style.display = 'none';
-      document.getElementById('mainApp').style.display = 'flex';
-      goTo('screen-welcome');
+      showApp('screen-welcome');
       showToast('Connection error. Check your internet.');
       return;
     }
     const { data: { session }, error } = await sb.auth.getSession();
-    document.getElementById('loadingScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'flex';
+    showApp();
     if (error) {
       console.error('Session error:', error);
       goTo('screen-welcome');
@@ -1093,9 +1090,7 @@ async function init() {
     }
   } catch(e) {
     console.error('Init error:', e);
-    document.getElementById('loadingScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'flex';
-    goTo('screen-welcome');
+    showApp('screen-welcome');
   }
 }
 
@@ -3303,12 +3298,13 @@ async function checkDailyReminders() {
 
 let supabaseReady = false;
 
-function showApp() {
+function showApp(screen) {
   const loader = document.getElementById('loadingScreen');
   if (loader) {
     loader.classList.add('hidden');
     setTimeout(() => { loader.style.display = 'none'; }, 400);
   }
+  if (screen) goTo(screen);
 }
 
 function startApp() {
@@ -3323,8 +3319,7 @@ function startApp() {
     init();
   } catch(e) {
     console.error('Start error:', e);
-    showApp();
-    goTo('screen-welcome');
+    showApp('screen-welcome');
   }
 }
 
@@ -3339,8 +3334,7 @@ if (typeof supabase !== 'undefined') {
       startApp();
     } else if (tries > 20) {
       clearInterval(interval);
-      showApp();
-      goTo('screen-welcome');
+      showApp('screen-welcome');
     }
   }, 200);
 }
