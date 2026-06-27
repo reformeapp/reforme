@@ -96,6 +96,11 @@ async function handleLogin() {
   const btn = document.getElementById('loginBtn');
   const err = document.getElementById('loginError');
   if (!email || !password) { err.textContent = 'Please fill in all fields'; err.classList.add('show'); return; }
+  if (!sb) {
+    err.textContent = 'App not ready yet. Wait a moment and try again.';
+    err.classList.add('show');
+    return;
+  }
   btn.disabled = true;
   btn.textContent = 'Signing in...';
   err.classList.remove('show');

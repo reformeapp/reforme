@@ -1135,10 +1135,26 @@ if (typeof supabase !== 'undefined') {
     if (typeof supabase !== 'undefined') {
       clearInterval(interval);
       startApp();
-    } else if (tries > 20) {
+    } else if (tries > 30) {
       clearInterval(interval);
-      showApp();
-      goTo('screen-welcome');
+      // Try one more time with a fresh script load
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      s.onload = () => {
+        if (typeof supabase !== 'undefined') {
+          startApp();
+        } else {
+          showApp();
+          goTo('screen-welcome');
+          setTimeout(() => showToast('Connection slow — try refreshing'), 500);
+        }
+      };
+      s.onerror = () => {
+        showApp();
+        goTo('screen-welcome');
+        setTimeout(() => showToast('Check your internet connection'), 500);
+      };
+      document.head.appendChild(s);
     }
   }, 200);
 }
