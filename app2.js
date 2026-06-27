@@ -48,7 +48,7 @@ async function loadClientPlanForDay() {
   const { data: todayLogs } = await sb.from('food_logs').select('*').eq('user_id', currentUser.id).gte('logged_at', today);
   const mealContainer = document.getElementById('cMealView');
   const workContainer = document.getElementById('cWorkView');
-  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎' };
+  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎', pre_workout:'💪', post_workout:'🔄', meal1:'1️⃣', meal2:'2️⃣', meal3:'3️⃣', meal4:'4️⃣', meal5:'5️⃣', meal6:'6️⃣' };
   if (!mealPlans || mealPlans.length === 0) {
     mealContainer.innerHTML = '<div class="empty-plan"><div class="empty-plan-icon">📋</div><div class="empty-plan-title">No meal plan for ' + clientSelectedDay + '</div><div class="empty-plan-sub">Your trainer hasn\'t set meals for this day yet.</div></div>';
   } else {
@@ -558,7 +558,7 @@ function renderPlanBuilder() {
     });
   }
   const meals = weeklyMeals[currentPlanDay] || [];
-  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎' };
+  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎', pre_workout:'💪', post_workout:'🔄', meal1:'1️⃣', meal2:'2️⃣', meal3:'3️⃣', meal4:'4️⃣', meal5:'5️⃣', meal6:'6️⃣' };
   let mealHtml = '';
   if (meals.length === 0) {
     mealHtml = `<div style="text-align:center;padding:20px;color:#5A5A52;font-size:12px;">No meals yet. Add below.</div>`;
@@ -622,10 +622,18 @@ function renderPlanBuilder() {
       <div style="background:#1A1A18;border-radius:12px;padding:14px;margin-top:10px;border:0.5px solid #2A2A26;">
         <div style="font-size:11px;color:#C9B99A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">+ Add meal to ${currentPlanDay}</div>
         <select id="addMealType" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:8px;outline:none;">
+          <option value="meal1">Meal 1</option>
+          <option value="meal2">Meal 2</option>
+          <option value="meal3">Meal 3</option>
+          <option value="meal4">Meal 4</option>
+          <option value="meal5">Meal 5</option>
+          <option value="meal6">Meal 6</option>
           <option value="breakfast">🌅 Breakfast</option>
           <option value="lunch">☀️ Lunch</option>
           <option value="dinner">🌙 Dinner</option>
           <option value="snack">🍎 Snack</option>
+          <option value="pre_workout">💪 Pre-workout</option>
+          <option value="post_workout">🔄 Post-workout</option>
         </select>
         <input type="text" id="addMealDesc" placeholder="e.g. Grilled chicken + rice + salad" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:8px;outline:none;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
@@ -636,6 +644,16 @@ function renderPlanBuilder() {
       </div>
     </div>
     <!-- SAVE BUTTON -->
+    <!-- CALORIE OVERRIDE -->
+    <div style="background:#1A1A18;border-radius:12px;padding:14px;margin-top:10px;border:0.5px solid #2A2A26;">
+      <div style="font-size:11px;color:#C9B99A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Override calorie target for ${clientName}</div>
+      <div style="font-size:11px;color:#5A5A52;margin-bottom:8px;">Leave empty to keep their current target. Use this when changing from bulk to cut or adjusting their plan.</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="number" id="coachCalOverride" placeholder="e.g. 1800" style="flex:1;padding:8px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;">
+        <span style="font-size:12px;color:#5A5A52;">kcal / day</span>
+      </div>
+    </div>
+
     <button onclick="savePlanToDB()" class="btn-p" style="margin-top:14px;background:#C9B99A;color:#111110;font-weight:600;font-size:15px;">📤 Save & send full plan to ${clientName}</button>
   `;
 }
@@ -727,13 +745,35 @@ async function savePlanToDB() {
   if (workoutRows.length > 0) await sb.from('workout_plans').insert(workoutRows);
   if (mealRows.length > 0) await sb.from('meal_plans').insert(mealRows);
 
+  // Apply calorie override if coach set one
+  const calOverrideEl = document.getElementById('coachCalOverride');
+  const calOverride = calOverrideEl ? parseInt(calOverrideEl.value) : null;
+  if (calOverride && calOverride > 500 && calOverride < 10000) {
+    await sb.from('profiles').update({ calorie_goal: calOverride }).eq('id', selectedClient.id);
+    showToast('✓ Calorie target updated to ' + calOverride + ' kcal');
+    if (calOverrideEl) calOverrideEl.value = '';
+  }
+
   // Notify client that their plan was updated
-  const totalItems = workoutRows.length + mealRows.length;
-  if (totalItems > 0) {
+  if (workoutRows.length > 0 && mealRows.length > 0) {
     sb.from('notifications').insert({
       user_id: selectedClient.id,
-      title: 'Your plan has been updated',
-      body: 'Your coach sent you a new plan — ' + mealRows.length + ' meals and ' + workoutRows.length + ' exercises',
+      title: 'Plan updated',
+      body: 'Meals & workout updated by coach',
+      type: 'plan_update'
+    }).then(() => {}).catch(() => {});
+  } else if (workoutRows.length > 0) {
+    sb.from('notifications').insert({
+      user_id: selectedClient.id,
+      title: 'Workout updated',
+      body: 'Coach updated your workout plan',
+      type: 'plan_update'
+    }).then(() => {}).catch(() => {});
+  } else if (mealRows.length > 0) {
+    sb.from('notifications').insert({
+      user_id: selectedClient.id,
+      title: 'Meal plan updated',
+      body: 'Coach updated your meal plan',
       type: 'plan_update'
     }).then(() => {}).catch(() => {});
   }
