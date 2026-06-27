@@ -15,7 +15,7 @@
   --text:rgba(255,255,255,0.9);--text2:rgba(255,255,255,0.45);--text3:rgba(255,255,255,0.2);
 }
 html,body{height:100%;overflow:hidden;}
-body{font-family:'DM Sans',sans-serif;background:#000;}
+body{font-family:'DM Sans',sans-serif;background:#000;min-height:100vh;}
 
 .app{height:100vh;display:flex;flex-direction:column;overflow:hidden;background:#000;max-width:430px;margin:0 auto;position:relative;}
 .app::before{content:'';position:fixed;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(201,185,154,0.08) 0%,transparent 60%);pointer-events:none;z-index:0;}
@@ -84,17 +84,18 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .page-sub{font-size:11px;color:var(--text3);margin-top:3px;letter-spacing:0.04em;text-transform:uppercase;}
 .scroll{flex:1;overflow-y:auto;padding:14px 20px;-webkit-overflow-scrolling:touch;}
 
-.bottom-nav{display:flex;background:rgba(0,0,0,0.8);padding:8px 12px 24px;gap:5px;flex-shrink:0;border-top:0.5px solid rgba(201,185,154,0.08);}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:7px 2px;color:var(--text3);font-size:8px;letter-spacing:0.03em;text-transform:uppercase;border:none;background:transparent;border-radius:10px;font-family:'DM Sans',sans-serif;}
+.bottom-nav{display:flex;background:#000;padding:8px 12px 24px;gap:4px;flex-shrink:0;border-top:0.5px solid rgba(201,185,154,0.08);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:7px 2px;color:rgba(255,255,255,0.2);font-size:7px;letter-spacing:0.04em;text-transform:uppercase;border:none;background:transparent;border-radius:10px;font-family:'DM Sans',sans-serif;}
 .nav-btn.active{background:rgba(201,185,154,0.1);color:#C9B99A;border:0.5px solid rgba(201,185,154,0.2);}
-.nav-btn i{font-size:18px;}
+.nav-btn i{font-size:16px;}
 .notif-wrap{position:relative;display:inline-flex;}
 .notif-dot{position:absolute;top:-2px;right:-3px;width:7px;height:7px;background:#B54040;border-radius:50%;border:1.5px solid #000;}
 
-.card{background:var(--glass);border-radius:14px;padding:14px;margin-bottom:10px;border:0.5px solid var(--glass-border);}
-.card-dark{background:var(--glass);border-radius:14px;padding:14px;margin-bottom:10px;border:0.5px solid var(--glass-border);}
+.card{background:rgba(201,185,154,0.04);border-radius:16px;padding:14px;margin-bottom:8px;border:0.5px solid rgba(201,185,154,0.12);}
+.card-dark{background:rgba(201,185,154,0.04);border-radius:16px;padding:14px;margin-bottom:8px;border:0.5px solid rgba(201,185,154,0.12);}
 
-.cal-hero{background:var(--glass);border-radius:16px;padding:20px 18px 16px;margin-bottom:10px;position:relative;border:0.5px solid var(--glass-border);}
+.cal-hero{background:rgba(201,185,154,0.04);border-radius:16px;padding:20px 18px 16px;margin-bottom:10px;position:relative;border:0.5px solid rgba(201,185,154,0.12);overflow:hidden;}
+.cal-hero::before{content:'';position:absolute;top:-30px;right:-20px;width:120px;height:120px;background:radial-gradient(circle,rgba(201,185,154,0.15) 0%,transparent 65%);pointer-events:none;}
 .hero-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:2px;}
 .hero-num{font-family:'DM Serif Display',serif;font-size:64px;font-weight:400;color:#fff;line-height:1;}
 .hero-unit{font-size:11px;color:var(--text3);margin-top:2px;}
@@ -105,17 +106,17 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .rem-val{font-size:20px;color:#C9B99A;font-family:'DM Serif Display',serif;}
 .rem-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;}
 .macro-pills{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:10px;}
-.mpill{background:rgba(255,255,255,0.03);border-radius:10px;padding:10px 8px;border:0.5px solid rgba(255,255,255,0.05);}
-.mpill-val{font-size:18px;font-weight:500;color:#fff;font-family:'DM Serif Display',serif;}
-.mpill-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px;}
-.mpill-bar{height:1.5px;background:rgba(255,255,255,0.04);border-radius:2px;margin-top:7px;overflow:hidden;}
+.mpill{background:rgba(201,185,154,0.04);border-radius:12px;padding:10px 8px;border:0.5px solid rgba(201,185,154,0.1);}
+.mpill-val{font-size:20px;font-weight:400;color:#fff;font-family:'DM Serif Display',serif;}
+.mpill-lbl{font-size:8px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;}
+.mpill-bar{height:1.5px;background:rgba(255,255,255,0.05);border-radius:2px;margin-top:7px;overflow:hidden;}
 .mpill-fill{height:100%;border-radius:2px;transition:width 0.5s;}
-.streak-badge{display:flex;align-items:center;gap:8px;background:rgba(193,125,60,0.1);border:0.5px solid rgba(193,125,60,0.2);border-radius:10px;padding:8px 12px;margin-top:10px;}
-.streak-num{font-family:'DM Serif Display',serif;font-size:20px;color:#C17D3C;}
-.streak-text{font-size:11px;color:var(--text2);}
+.streak-badge{display:flex;align-items:center;gap:6px;margin-top:8px;}
+.streak-num{font-size:12px;font-weight:500;color:#C17D3C;}
+.streak-text{font-size:10px;color:rgba(255,255,255,0.3);}
 
 .water-glasses{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
-.wglass{width:32px;height:32px;border-radius:8px;border:0.5px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;background:transparent;transition:background 0.15s;}
+.wglass{width:26px;height:26px;border-radius:7px;border:0.5px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;background:transparent;transition:background 0.15s;}
 .wglass.filled{background:rgba(44,95,138,0.2);border-color:rgba(44,95,138,0.35);}
 
 .food-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(201,185,154,0.08);}
@@ -171,7 +172,7 @@ select.field{background:rgba(201,185,154,0.05);color:#fff;}
 .stat-val{font-size:15px;font-weight:500;color:#fff;font-family:'DM Serif Display',serif;}
 .stat-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px;}
 
-.ai-card{background:var(--glass);border-radius:12px;padding:14px;margin-bottom:10px;border:0.5px solid var(--glass-border);}
+.ai-card{background:rgba(201,185,154,0.04);border-radius:16px;padding:12px 14px;margin-bottom:8px;border:0.5px solid rgba(201,185,154,0.12);}
 .ai-lbl{font-size:9px;color:#C9B99A;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;}
 .ai-text{font-size:12px;color:var(--text2);line-height:1.6;}
 
@@ -252,13 +253,13 @@ setTimeout(function() {
 <div class="screen active" id="screen-welcome">
   <div class="auth-screen">
     <div class="auth-logo">Reformé</div>
-    <div class="auth-tagline">Track · Train · Transform</div>
+    <div class="auth-tagline">Eat. Sleep. Exercise. Your coach is watching.</div>
     <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
-      <div style="font-family:'DM Serif Display',serif;font-size:34px;color:#fff;line-height:1.25;margin-bottom:14px;">The fitness app that actually sees what you eat.</div>
-      <div style="font-size:13px;color:#5A5A52;line-height:1.8;margin-bottom:24px;">Snap your meal. Get your macros. Your trainer sees everything in real time.</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:34px;color:#fff;line-height:1.25;margin-bottom:14px;">The fitness app where your coach sees everything.</div>
+      <div style="font-size:13px;color:#5A5A52;line-height:1.8;margin-bottom:24px;">Your meals. Your workouts. Your progress. All visible to your coach in real time.</div>
     </div>
-    <button class="btn-p" onclick="goTo('screen-signup')">Get started</button>
-    <button class="btn-s" onclick="goTo('screen-login')">I already have an account</button>
+    <button class="btn-p" onclick="goTo('screen-signup')">Sign up</button>
+    <button class="btn-s" onclick="goTo('screen-login')">Sign in</button>
   </div>
 </div>
 
@@ -399,7 +400,7 @@ setTimeout(function() {
 <!-- ══════════ CLIENT APP ══════════ -->
 <div class="screen" id="screen-client">
   <div class="app-main">
-    <div style="background:#111110;padding:10px 20px 0;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;">
+    <div style="background:#000;padding:12px 20px 10px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid rgba(201,185,154,0.08);">
       <span class="logo">Reformé</span>
       <div id="clientAvatarBtn" onclick="showClientTab('profile')" style="width:34px;height:34px;border-radius:50%;background:#2D6A4F;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:'DM Serif Display',serif;border:1.5px solid #1A4A32;"></div>
     </div>
@@ -427,21 +428,21 @@ setTimeout(function() {
         <div id="dashPlanProgress" style="margin-bottom:10px;display:none;"></div>
 
         <!-- ACTUAL VS TARGET -->
-        <div class="card-dark" style="margin-bottom:10px;padding:0;overflow:hidden;">
+        <div style="background:rgba(201,185,154,0.04);border:0.5px solid rgba(201,185,154,0.12);border-radius:18px;margin-bottom:8px;overflow:hidden;">
           <div style="display:grid;grid-template-columns:1fr 1fr;">
-            <div style="padding:14px 12px;border-right:0.5px solid #2A2A26;">
-              <div style="font-size:9px;color:#5A5A52;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Actual</div>
-              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:rgba(255,255,255,0.2);">Calories</span><span style="font-size:12px;font-weight:500;color:#fff;" id="avt-cal">0</span></div>
-              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:rgba(255,255,255,0.2);">Protein</span><span style="font-size:12px;font-weight:500;color:#fff;" id="avt-p">0g</span></div>
-              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:rgba(255,255,255,0.2);">Carbs</span><span style="font-size:12px;font-weight:500;color:#fff;" id="avt-c">0g</span></div>
-              <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="font-size:11px;color:rgba(255,255,255,0.2);">Fat</span><span style="font-size:12px;font-weight:500;color:#fff;" id="avt-f">0g</span></div>
+            <div style="padding:12px 10px;border-right:0.5px solid rgba(201,185,154,0.1);">
+              <div style="font-size:8px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Actual</div>
+              <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,0.03);"><span style="font-size:10px;color:rgba(255,255,255,0.25);">Calories</span><span style="font-size:11px;font-weight:500;color:#fff;" id="avt-cal">0</span></div>
+              <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,0.03);"><span style="font-size:10px;color:rgba(255,255,255,0.25);">Protein</span><span style="font-size:11px;font-weight:500;color:#fff;" id="avt-p">0g</span></div>
+              <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,0.03);"><span style="font-size:10px;color:rgba(255,255,255,0.25);">Carbs</span><span style="font-size:11px;font-weight:500;color:#fff;" id="avt-c">0g</span></div>
+              <div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="font-size:10px;color:rgba(255,255,255,0.25);">Fat</span><span style="font-size:11px;font-weight:500;color:#fff;" id="avt-f">0g</span></div>
             </div>
-            <div style="padding:14px 12px;">
-              <div style="font-size:9px;color:#2D6A4F;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Target</div>
-              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:rgba(255,255,255,0.2);">Calories</span><span style="font-size:12px;font-weight:500;color:#2D6A4F;" id="avt-tcal">0</span></div>
-              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:rgba(255,255,255,0.2);">Protein</span><span style="font-size:12px;font-weight:500;color:#2D6A4F;" id="avt-tp">0g</span></div>
-              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1A1A18;"><span style="font-size:11px;color:rgba(255,255,255,0.2);">Carbs</span><span style="font-size:12px;font-weight:500;color:#2D6A4F;" id="avt-tc">0g</span></div>
-              <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="font-size:11px;color:rgba(255,255,255,0.2);">Fat</span><span style="font-size:12px;font-weight:500;color:#2D6A4F;" id="avt-tf">0g</span></div>
+            <div style="padding:12px 10px;">
+              <div style="font-size:8px;color:rgba(201,185,154,0.6);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Target</div>
+              <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,0.03);"><span style="font-size:10px;color:rgba(255,255,255,0.25);">Calories</span><span style="font-size:11px;font-weight:500;color:#C9B99A;" id="avt-tcal">0</span></div>
+              <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,0.03);"><span style="font-size:10px;color:rgba(255,255,255,0.25);">Protein</span><span style="font-size:11px;font-weight:500;color:#C9B99A;" id="avt-tp">0g</span></div>
+              <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,0.03);"><span style="font-size:10px;color:rgba(255,255,255,0.25);">Carbs</span><span style="font-size:11px;font-weight:500;color:#C9B99A;" id="avt-tc">0g</span></div>
+              <div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="font-size:10px;color:rgba(255,255,255,0.25);">Fat</span><span style="font-size:11px;font-weight:500;color:#C9B99A;" id="avt-tf">0g</span></div>
             </div>
           </div>
         </div>
@@ -686,7 +687,7 @@ setTimeout(function() {
 
     <!-- PROFILE -->
     <div class="screen" id="c-profile">
-      <div style="background:#111110;padding:12px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+      <div style="background:#000;padding:12px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
         <button onclick="showClientTab('dashboard')" style="background:#1E1E1B;border:none;color:#C9B99A;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:7px 12px;border-radius:8px;display:flex;align-items:center;gap:4px;"><i class="ti ti-arrow-left"></i> Back</button>
         <span style="font-family:'DM Serif Display',serif;font-size:16px;color:#fff;">Profile</span>
       </div>
@@ -723,7 +724,7 @@ setTimeout(function() {
 <!-- ══════════ TRAINER APP ══════════ -->
 <div class="screen" id="screen-trainer">
   <div class="app-main">
-    <div style="background:#111110;padding:10px 20px 0;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;">
+    <div style="background:#000;padding:12px 20px 10px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid rgba(201,185,154,0.08);">
       <span class="logo">Reformé</span>
       <div id="trainerAvatarBtn" onclick="showTrainerTab('profile')" style="width:34px;height:34px;border-radius:50%;background:#C9B99A;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#111110;cursor:pointer;font-family:'DM Serif Display',serif;border:1.5px solid #A09070;"></div>
     </div>
@@ -779,7 +780,7 @@ setTimeout(function() {
     </div>
 
     <div class="screen" id="t-profile">
-      <div style="background:#111110;padding:12px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+      <div style="background:#000;padding:12px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
         <button onclick="showTrainerTab('clients')" style="background:#1E1E1B;border:none;color:#C9B99A;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:7px 12px;border-radius:8px;display:flex;align-items:center;gap:4px;"><i class="ti ti-arrow-left"></i> Back</button>
         <span style="font-family:'DM Serif Display',serif;font-size:16px;color:#fff;">Profile</span>
       </div>
@@ -985,7 +986,7 @@ setTimeout(function() {
     <div class="field-label">Current weight (kg)</div>
     <input class="modal-field" id="checkInWeight" type="number" placeholder="e.g. 75.5">
     <div class="field-label" style="margin-top:8px;">How are you feeling this week?</div>
-    <select class="modal-field" id="checkInFeeling" style="background:#111110;color:#fff;">
+    <select class="modal-field" id="checkInFeeling" style="background:rgba(201,185,154,0.05);color:#fff;">
       <option value="great">💪 Great — feeling strong</option>
       <option value="good">😊 Good — on track</option>
       <option value="okay">😐 Okay — some struggles</option>
@@ -1003,15 +1004,15 @@ setTimeout(function() {
   <div class="modal">
     <div class="modal-title">Send media</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
-      <div style="background:#111110;border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;" onclick="showToast('Photo messages coming soon!')">
+      <div style="background:rgba(201,185,154,0.05);border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;" onclick="showToast('Photo messages coming soon!')">
         <div style="font-size:28px;margin-bottom:6px;">📷</div>
         <div style="font-size:11px;color:#7A7A6E;">Photo</div>
       </div>
-      <div style="background:#111110;border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;" onclick="showToast('Video messages coming soon!')">
+      <div style="background:rgba(201,185,154,0.05);border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;" onclick="showToast('Video messages coming soon!')">
         <div style="font-size:28px;margin-bottom:6px;">🎥</div>
         <div style="font-size:11px;color:#7A7A6E;">Video</div>
       </div>
-      <div style="background:#111110;border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;" onclick="showToast('Voice messages coming soon!')">
+      <div style="background:rgba(201,185,154,0.05);border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;" onclick="showToast('Voice messages coming soon!')">
         <div style="font-size:28px;margin-bottom:6px;">🎙️</div>
         <div style="font-size:11px;color:#7A7A6E;">Voice</div>
       </div>
