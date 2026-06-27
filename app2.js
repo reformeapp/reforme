@@ -48,7 +48,7 @@ async function loadClientPlanForDay() {
   const { data: todayLogs } = await sb.from('food_logs').select('*').eq('user_id', currentUser.id).gte('logged_at', today);
   const mealContainer = document.getElementById('cMealView');
   const workContainer = document.getElementById('cWorkView');
-  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎', pre_workout:'💪', post_workout:'🔄', meal1:'1️⃣', meal2:'2️⃣', meal3:'3️⃣', meal4:'4️⃣', meal5:'5️⃣', meal6:'6️⃣' };
+  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎', pre_workout:'💪', post_workout:'🔄' };
   if (!mealPlans || mealPlans.length === 0) {
     mealContainer.innerHTML = '<div class="empty-plan"><div class="empty-plan-icon">📋</div><div class="empty-plan-title">No meal plan for ' + clientSelectedDay + '</div><div class="empty-plan-sub">Your trainer hasn\'t set meals for this day yet.</div></div>';
   } else {
@@ -558,7 +558,7 @@ function renderPlanBuilder() {
     });
   }
   const meals = weeklyMeals[currentPlanDay] || [];
-  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎', pre_workout:'💪', post_workout:'🔄', meal1:'1️⃣', meal2:'2️⃣', meal3:'3️⃣', meal4:'4️⃣', meal5:'5️⃣', meal6:'6️⃣' };
+  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎', pre_workout:'💪', post_workout:'🔄' };
   let mealHtml = '';
   if (meals.length === 0) {
     mealHtml = `<div style="text-align:center;padding:20px;color:#5A5A52;font-size:12px;">No meals yet. Add below.</div>`;
@@ -622,12 +622,6 @@ function renderPlanBuilder() {
       <div style="background:#1A1A18;border-radius:12px;padding:14px;margin-top:10px;border:0.5px solid #2A2A26;">
         <div style="font-size:11px;color:#C9B99A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">+ Add meal to ${currentPlanDay}</div>
         <select id="addMealType" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:8px;outline:none;">
-          <option value="meal1">Meal 1</option>
-          <option value="meal2">Meal 2</option>
-          <option value="meal3">Meal 3</option>
-          <option value="meal4">Meal 4</option>
-          <option value="meal5">Meal 5</option>
-          <option value="meal6">Meal 6</option>
           <option value="breakfast">🌅 Breakfast</option>
           <option value="lunch">☀️ Lunch</option>
           <option value="dinner">🌙 Dinner</option>

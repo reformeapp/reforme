@@ -483,7 +483,7 @@ function renderFoodLog() {
   todayFoodLogs.forEach(log => { const t = log.meal_type || 'snack'; if (meals[t]) meals[t].push(log); });
   let html = '';
   const mealLabels = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' };
-  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎', pre_workout:'💪', post_workout:'🔄', meal1:'1️⃣', meal2:'2️⃣', meal3:'3️⃣', meal4:'4️⃣', meal5:'5️⃣', meal6:'6️⃣' };
+  const mealEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎', pre_workout:'💪', post_workout:'🔄' };
   Object.entries(meals).forEach(([type, logs]) => {
     if (logs.length === 0) return;
     html += `<div style="font-size:11px;font-weight:600;color:#5C5C52;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;margin-top:14px;">${mealLabels[type]}</div>`;
