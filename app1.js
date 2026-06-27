@@ -641,22 +641,63 @@ async function addSnapToLog() {
 function toggleManualLog() {
   const form = document.getElementById('manualLogForm');
   form.classList.toggle('show');
+  if (form.classList.contains('show')) {
+    document.getElementById('manualDescription').value = '';
+    document.getElementById('manualAIResult').style.display = 'none';
+    document.getElementById('manualAnalyseBtn').style.display = 'block';
+    document.getElementById('manualConfirmBtn').style.display = 'none';
+  }
 }
-async function addManualLog() {
-  const name = document.getElementById('manualName').value.trim();
-  if (!name) { showToast('Please enter a food name'); return; }
-  const cal = parseInt(document.getElementById('manualCal').value) || 0;
-  const protein = parseFloat(document.getElementById('manualProtein').value) || 0;
-  const carbs = parseFloat(document.getElementById('manualCarbs').value) || 0;
-  const fat = parseFloat(document.getElementById('manualFat').value) || 0;
+
+let manualLogData = null;
+
+async function analyseManualLog() {
+  const desc = document.getElementById('manualDescription').value.trim();
+  if (!desc) { showToast('Describe what you ate first'); return; }
+  const btn = document.getElementById('manualAnalyseBtn');
+  btn.textContent = 'Analysing...';
+  btn.disabled = true;
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 300,
+        messages: [{ role: 'user', content: 'Calculate nutritional values for: "' + desc + '". Return ONLY valid JSON: {"name":"short name","calories":0,"protein":0,"carbs":0,"fat":0}' }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '';
+    const result = JSON.parse(text.replace(/```json|```/g,'').trim());
+    manualLogData = result;
+    document.getElementById('manualAIResult').style.display = 'block';
+    document.getElementById('manualAICal').innerHTML = result.calories + ' <span style="font-size:13px;color:rgba(255,255,255,0.3);font-family:'DM Sans',sans-serif;">kcal</span>';
+    document.getElementById('manualAIProtein').textContent = result.protein + 'g';
+    document.getElementById('manualAICarbs').textContent = result.carbs + 'g';
+    document.getElementById('manualAIFat').textContent = result.fat + 'g';
+    document.getElementById('manualAIName').textContent = result.name;
+    btn.textContent = '✨ Re-analyse';
+    btn.disabled = false;
+    document.getElementById('manualConfirmBtn').style.display = 'block';
+  } catch(e) {
+    console.error('Manual log AI error:', e);
+    showToast('Could not analyse. Check connection.');
+    btn.textContent = '✨ Analyse';
+    btn.disabled = false;
+  }
+}
+
+async function confirmManualLog() {
+  if (!manualLogData) return;
   const mealType = document.getElementById('manualMealType').value;
-  await addFoodLog(name, cal, protein, carbs, fat, mealType);
-  document.getElementById('manualName').value = '';
-  document.getElementById('manualCal').value = '';
-  document.getElementById('manualProtein').value = '';
-  document.getElementById('manualCarbs').value = '';
-  document.getElementById('manualFat').value = '';
+  await addFoodLog(manualLogData.name, manualLogData.calories, manualLogData.protein, manualLogData.carbs, manualLogData.fat, mealType);
   toggleManualLog();
+  manualLogData = null;
+}
+
+async function addManualLog() {
+  await confirmManualLog();
 }
 async function addFoodLog(name, cal, protein, carbs, fat, mealType) {
   const { error } = await sb.from('food_logs').insert({ user_id: currentUser.id, food_name: name, calories: cal, protein: protein, carbs: carbs, fat: fat, meal_type: mealType });

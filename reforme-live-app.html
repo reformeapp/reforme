@@ -572,25 +572,34 @@ setTimeout(function() {
 
         <!-- MANUAL LOG FORM -->
         <div class="manual-log-form" id="manualLogForm">
-          <div style="font-size:13px;font-weight:500;color:#1A1A18;margin-bottom:12px;">Add manually</div>
-          <div class="field-label" style="color:#5C5C52;">Food name</div>
-          <input type="text" id="manualName" placeholder="e.g. Shawarma wrap" style="width:100%;padding:10px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:#F5F2EE;color:#1A1A18;margin-bottom:10px;outline:none;">
-          <div class="macro-fields">
-            <div class="macro-field-wrap"><div class="mf-label" style="font-size:10px;color:#5C5C52;margin-bottom:4px;">Calories</div><input type="number" id="manualCal" placeholder="0" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:rgba(201,185,154,0.06);color:#fff;outline:none;"></div>
-            <div class="macro-field-wrap"><div class="mf-label" style="font-size:10px;color:#5C5C52;margin-bottom:4px;">Protein g</div><input type="number" id="manualProtein" placeholder="0" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:rgba(201,185,154,0.06);color:#fff;outline:none;"></div>
-            <div class="macro-field-wrap"><div class="mf-label" style="font-size:10px;color:#5C5C52;margin-bottom:4px;">Carbs g</div><input type="number" id="manualCarbs" placeholder="0" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:rgba(201,185,154,0.06);color:#fff;outline:none;"></div>
-            <div class="macro-field-wrap"><div class="mf-label" style="font-size:10px;color:#5C5C52;margin-bottom:4px;">Fat g</div><input type="number" id="manualFat" placeholder="0" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:rgba(201,185,154,0.06);color:#fff;outline:none;"></div>
-          </div>
-          <div style="font-size:11px;color:#5C5C52;margin-bottom:8px;">Meal type</div>
-          <select id="manualMealType" style="width:100%;padding:10px;border-radius:8px;border:0.5px solid #DDD9D0;font-size:13px;font-family:'DM Sans',sans-serif;background:#F5F2EE;color:#1A1A18;margin-bottom:12px;outline:none;">
-            <option value="breakfast">Breakfast</option>
-            <option value="lunch">Lunch</option>
-            <option value="dinner">Dinner</option>
-            <option value="snack">Snack</option>
+          <div style="font-size:13px;font-weight:500;color:#fff;margin-bottom:6px;">What did you eat?</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:10px;">Describe your meal with portions — AI calculates the rest</div>
+          <textarea id="manualDescription" placeholder="e.g. 200g grilled chicken, 200g white rice, side salad" style="width:100%;padding:10px;border-radius:10px;border:0.5px solid rgba(201,185,154,0.2);font-size:13px;font-family:'DM Sans',sans-serif;background:rgba(201,185,154,0.05);color:#fff;outline:none;resize:none;height:70px;margin-bottom:10px;"></textarea>
+          <select id="manualMealType" style="width:100%;padding:10px;border-radius:8px;border:0.5px solid rgba(201,185,154,0.2);font-size:13px;font-family:'DM Sans',sans-serif;background:rgba(201,185,154,0.05);color:#fff;margin-bottom:10px;outline:none;">
+            <option value="breakfast">🌅 Breakfast</option>
+            <option value="lunch">☀️ Lunch</option>
+            <option value="dinner">🌙 Dinner</option>
+            <option value="snack">🍎 Snack</option>
+            <option value="pre_workout">💪 Pre-workout</option>
+            <option value="post_workout">🔄 Post-workout</option>
           </select>
+
+          <!-- AI RESULT — shown after analysis -->
+          <div id="manualAIResult" style="display:none;background:rgba(201,185,154,0.06);border:0.5px solid rgba(201,185,154,0.15);border-radius:10px;padding:12px;margin-bottom:10px;">
+            <div style="font-size:9px;color:#C9B99A;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">AI calculated</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:36px;color:#fff;line-height:1;" id="manualAICal">0 <span style="font-size:13px;color:rgba(255,255,255,0.3);font-family:'DM Sans',sans-serif;">kcal</span></div>
+            <div style="display:flex;gap:16px;margin-top:8px;">
+              <div><div style="font-size:14px;font-weight:500;color:#2D6A4F;" id="manualAIProtein">0g</div><div style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;">Protein</div></div>
+              <div><div style="font-size:14px;font-weight:500;color:#2C5F8A;" id="manualAICarbs">0g</div><div style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;">Carbs</div></div>
+              <div><div style="font-size:14px;font-weight:500;color:#C17D3C;" id="manualAIFat">0g</div><div style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;">Fat</div></div>
+            </div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:6px;" id="manualAIName"></div>
+          </div>
+
           <div style="display:flex;gap:8px;">
-            <button onclick="toggleManualLog()" style="flex:1;padding:10px;background:#EDE9E3;border:none;border-radius:8px;font-size:13px;color:#5C5C52;cursor:pointer;font-family:'DM Sans',sans-serif;">Cancel</button>
-            <button onclick="addManualLog()" style="flex:1;padding:10px;background:#2D6A4F;border:none;border-radius:8px;font-size:13px;font-weight:500;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;">Add to log</button>
+            <button onclick="toggleManualLog()" style="flex:1;padding:10px;background:rgba(201,185,154,0.05);border:0.5px solid rgba(201,185,154,0.15);border-radius:8px;font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;font-family:'DM Sans',sans-serif;">Cancel</button>
+            <button onclick="analyseManualLog()" id="manualAnalyseBtn" style="flex:1;padding:10px;background:#C9B99A;border:none;border-radius:8px;font-size:13px;font-weight:600;color:#000;cursor:pointer;font-family:'DM Sans',sans-serif;">✨ Analyse</button>
+            <button onclick="confirmManualLog()" id="manualConfirmBtn" style="display:none;flex:1;padding:10px;background:#2D6A4F;border:none;border-radius:8px;font-size:13px;font-weight:500;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;">Add to log</button>
           </div>
         </div>
 

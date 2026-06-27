@@ -629,12 +629,21 @@ function renderPlanBuilder() {
           <option value="pre_workout">💪 Pre-workout</option>
           <option value="post_workout">🔄 Post-workout</option>
         </select>
-        <input type="text" id="addMealDesc" placeholder="e.g. Grilled chicken + rice + salad" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:8px;outline:none;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-          <div><div style="font-size:10px;color:#5A5A52;margin-bottom:3px;">Calories</div><input type="number" id="addMealCal" placeholder="500" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;"></div>
-          <div><div style="font-size:10px;color:#5A5A52;margin-bottom:3px;">Protein g</div><input type="number" id="addMealProtein" placeholder="40" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;"></div>
+        <input type="text" id="addMealDesc" placeholder="e.g. 200g grilled chicken, 200g white rice, salad" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:8px;outline:none;">
+        <!-- AI Result for coach -->
+        <div id="coachMealAIResult" style="display:none;background:rgba(201,185,154,0.06);border:0.5px solid rgba(201,185,154,0.15);border-radius:8px;padding:10px;margin-bottom:8px;">
+          <div style="font-size:9px;color:#C9B99A;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">AI calculated</div>
+          <div style="display:flex;gap:12px;">
+            <div><div style="font-size:16px;font-weight:500;color:#fff;" id="coachMealCal">0</div><div style="font-size:9px;color:#5A5A52;">kcal</div></div>
+            <div><div style="font-size:16px;font-weight:500;color:#2D6A4F;" id="coachMealProtein">0g</div><div style="font-size:9px;color:#5A5A52;">protein</div></div>
+            <div><div style="font-size:16px;font-weight:500;color:#2C5F8A;" id="coachMealCarbs">0g</div><div style="font-size:9px;color:#5A5A52;">carbs</div></div>
+            <div><div style="font-size:16px;font-weight:500;color:#C17D3C;" id="coachMealFat">0g</div><div style="font-size:9px;color:#5A5A52;">fat</div></div>
+          </div>
         </div>
-        <button onclick="addOneMeal()" class="btn-p">Add meal</button>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <button onclick="analyseCoachMeal()" id="coachAnalyseBtn" class="btn-s" style="flex:1;font-size:12px;padding:8px;">✨ Analyse</button>
+          <button onclick="addOneMeal()" id="coachAddMealBtn" style="display:none;flex:1;padding:8px;background:#2D6A4F;border:none;border-radius:8px;font-size:12px;font-weight:500;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;">+ Add meal</button>
+        </div>
       </div>
 
       <!-- CALORIE TARGET OVERRIDE -->
@@ -690,15 +699,58 @@ function addOneExercise() {
   showToast('✓ ' + name + ' added to ' + currentPlanDay);
   renderPlanBuilder();
 }
+let coachMealData = null;
+
+async function analyseCoachMeal() {
+  const desc = document.getElementById('addMealDesc').value.trim();
+  if (!desc) { showToast('Enter a meal description first'); return; }
+  const btn = document.getElementById('coachAnalyseBtn');
+  btn.textContent = 'Analysing...';
+  btn.disabled = true;
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 300,
+        messages: [{ role: 'user', content: 'Calculate nutritional values for: "' + desc + '". Return ONLY valid JSON: {"name":"short name","calories":0,"protein":0,"carbs":0,"fat":0}' }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '';
+    const result = JSON.parse(text.replace(/```json|```/g,'').trim());
+    coachMealData = result;
+    document.getElementById('coachMealAIResult').style.display = 'block';
+    document.getElementById('coachMealCal').textContent = result.calories;
+    document.getElementById('coachMealProtein').textContent = result.protein + 'g';
+    document.getElementById('coachMealCarbs').textContent = result.carbs + 'g';
+    document.getElementById('coachMealFat').textContent = result.fat + 'g';
+    btn.textContent = '✨ Re-analyse';
+    btn.disabled = false;
+    document.getElementById('coachAddMealBtn').style.display = 'block';
+  } catch(e) {
+    console.error('Coach meal AI error:', e);
+    showToast('Could not analyse. Check connection.');
+    btn.textContent = '✨ Analyse';
+    btn.disabled = false;
+  }
+}
+
 function addOneMeal() {
   const desc = document.getElementById('addMealDesc').value.trim();
   if (!desc) { showToast('Enter a meal description'); return; }
   const mealType = document.getElementById('addMealType').value;
-  const cal = parseInt(document.getElementById('addMealCal').value) || 0;
-  const protein = parseInt(document.getElementById('addMealProtein').value) || 0;
+  const cal = coachMealData?.calories || 0;
+  const protein = coachMealData?.protein || 0;
   if (!weeklyMeals[currentPlanDay]) weeklyMeals[currentPlanDay] = [];
   weeklyMeals[currentPlanDay].push({ meal_type: mealType, description: desc, calories: cal, protein });
   showToast('✓ Meal added to ' + currentPlanDay);
+  coachMealData = null;
+  document.getElementById('addMealDesc').value = '';
+  document.getElementById('coachMealAIResult').style.display = 'none';
+  document.getElementById('coachAnalyseBtn').textContent = '✨ Analyse';
+  document.getElementById('coachAddMealBtn').style.display = 'none';
   renderPlanBuilder();
 }
 async function savePlanToDB() {
