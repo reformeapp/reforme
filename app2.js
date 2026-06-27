@@ -642,17 +642,18 @@ function renderPlanBuilder() {
         </div>
         <button onclick="addOneMeal()" class="btn-p">Add meal</button>
       </div>
-    </div>
-    <!-- SAVE BUTTON -->
-    <!-- CALORIE OVERRIDE -->
-    <div style="background:#1A1A18;border-radius:12px;padding:14px;margin-top:10px;border:0.5px solid #2A2A26;">
-      <div style="font-size:11px;color:#C9B99A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Override calorie target for ${clientName}</div>
-      <div style="font-size:11px;color:#5A5A52;margin-bottom:8px;">Leave empty to keep their current target. Use this when changing from bulk to cut or adjusting their plan.</div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <input type="number" id="coachCalOverride" placeholder="e.g. 1800" style="flex:1;padding:8px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;">
-        <span style="font-size:12px;color:#5A5A52;">kcal / day</span>
+
+      <!-- CALORIE TARGET OVERRIDE -->
+      <div style="background:#1A1A18;border-radius:12px;padding:14px;margin-top:10px;border:0.5px solid #2A2A26;">
+        <div style="font-size:11px;color:#C9B99A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Set calorie target for ${clientName}</div>
+        <div style="font-size:11px;color:#5A5A52;margin-bottom:8px;">Override their AI-calculated target. Use when switching bulk to cut or adjusting intake.</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="number" id="coachCalOverride" placeholder="e.g. 1800" style="flex:1;padding:8px;border-radius:8px;border:0.5px solid #2A2A26;background:#111110;color:#E8E4DC;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;">
+          <span style="font-size:12px;color:#5A5A52;">kcal / day</span>
+        </div>
       </div>
     </div>
+    <!-- SAVE BUTTON -->
 
     <button onclick="savePlanToDB()" class="btn-p" style="margin-top:14px;background:#C9B99A;color:#111110;font-weight:600;font-size:15px;">📤 Save & send full plan to ${clientName}</button>
   `;
