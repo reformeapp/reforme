@@ -1,3 +1,7 @@
+// Constants also available in app2.js
+const SUPABASE_URL = 'https://mzpvainvmhbpjyambwap.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cHZhaW52bWhicGp5YW1id2FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTI0NzIsImV4cCI6MjA5Nzg4ODQ3Mn0.evlBxIC8K-fplIrEIS8JsxMN8QSvmfr5q5r77JX-Gm0';
+
 function goTo(screenId) {
   document.querySelectorAll('#mainApp > .screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(screenId);

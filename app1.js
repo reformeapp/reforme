@@ -1,4 +1,4 @@
- SUPABASE_URL = 'https://mzpvainvmhbpjyambwap.supabase.co';
+const SUPABASE_URL = 'https://mzpvainvmhbpjyambwap.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16cHZhaW52bWhicGp5YW1id2FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTI0NzIsImV4cCI6MjA5Nzg4ODQ3Mn0.evlBxIC8K-fplIrEIS8JsxMN8QSvmfr5q5r77JX-Gm0';
 let sb;
 let currentUser = null;
@@ -677,7 +677,7 @@ async function analyseManualLog() {
     const result = JSON.parse(text.replace(/```json|```/g,'').trim());
     manualLogData = result;
     document.getElementById('manualAIResult').style.display = 'block';
-    document.getElementById('manualAICal').innerHTML = result.calories + ' <span style="font-size:13px;color:rgba(255,255,255,0.3);font-family:'DM Sans',sans-serif;">kcal</span>';
+    document.getElementById('manualAICal').innerHTML = result.calories + ' <span style="font-size:13px;color:rgba(255,255,255,0.3);">kcal</span>';
     document.getElementById('manualAIProtein').textContent = result.protein + 'g';
     document.getElementById('manualAICarbs').textContent = result.carbs + 'g';
     document.getElementById('manualAIFat').textContent = result.fat + 'g';
