@@ -726,6 +726,18 @@ async function savePlanToDB() {
   });
   if (workoutRows.length > 0) await sb.from('workout_plans').insert(workoutRows);
   if (mealRows.length > 0) await sb.from('meal_plans').insert(mealRows);
+
+  // Notify client that their plan was updated
+  const totalItems = workoutRows.length + mealRows.length;
+  if (totalItems > 0) {
+    sb.from('notifications').insert({
+      user_id: selectedClient.id,
+      title: 'Your plan has been updated',
+      body: 'Your coach sent you a new plan — ' + mealRows.length + ' meals and ' + workoutRows.length + ' exercises',
+      type: 'plan_update'
+    }).then(() => {}).catch(() => {});
+  }
+
   showToast('✓ Full plan saved and sent to ' + selectedClient.name + '!');
   if (btn) { btn.disabled = false; btn.textContent = '📤 Save & send full plan to ' + selectedClient.name; }
 }
@@ -960,13 +972,27 @@ async function checkUnreadNotifications() {
       .order('created_at', { ascending: false })
       .limit(5);
     if (!notifs || notifs.length === 0) return;
-    const msgNav = document.getElementById('cnav-messages');
-    if (msgNav) {
-      const dot = msgNav.querySelector('.notif-dot');
+
+    // Show notification dot on messages for clients
+    const msgNavClient = document.getElementById('cnav-messages');
+    if (msgNavClient) {
+      const dot = msgNavClient.querySelector('.notif-dot');
       if (dot) dot.style.display = 'block';
     }
-    const latest = notifs[0];
-    showNotificationToast(latest.title, latest.body);
+
+    // Show notification dot on messages for trainers
+    const msgNavTrainer = document.getElementById('tnav-messages');
+    if (msgNavTrainer) {
+      const dot = msgNavTrainer.querySelector('.notif-dot');
+      if (dot) dot.style.display = 'block';
+    }
+
+    // Show toast for each new notification
+    notifs.forEach((notif, i) => {
+      setTimeout(() => showNotificationToast(notif.title, notif.body), i * 1500);
+    });
+
+    // Mark all as read
     await sb.from('notifications')
       .update({ read: true })
       .eq('user_id', currentUser.id)

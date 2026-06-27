@@ -278,7 +278,13 @@ async function loadClientApp() {
     updateClientProfile();
     generateAIInsight();
     checkWeeklyWeightPrompt();
-    setTimeout(() => { initFirebase(); checkDailyReminders(); checkUnreadNotifications(); }, 2000);
+    setTimeout(() => {
+      initFirebase();
+      checkDailyReminders();
+      checkUnreadNotifications();
+      // Poll for new notifications every 30 seconds
+      setInterval(checkUnreadNotifications, 30000);
+    }, 2000);
   } catch(e) {
     console.error('loadClientApp error:', e);
     showToast('Error loading. Please refresh.');
@@ -656,6 +662,15 @@ async function addFoodLog(name, cal, protein, carbs, fat, mealType) {
   const { error } = await sb.from('food_logs').insert({ user_id: currentUser.id, food_name: name, calories: cal, protein: protein, carbs: carbs, fat: fat, meal_type: mealType });
   if (error) { showToast('Error adding food. Try again.'); return; }
   showToast('✓ ' + name + ' added to log');
+  // Notify coach
+  if (currentProfile?.trainer_id) {
+    sb.from('notifications').insert({
+      user_id: currentProfile.trainer_id,
+      title: (currentProfile.full_name || 'Your member') + ' logged a meal',
+      body: name + (cal > 0 ? ' · ' + cal + ' kcal' : ''),
+      type: 'meal_log'
+    }).then(() => {}).catch(() => {});
+  }
   await loadFoodLog();
 }
 function openEditFood(id, name, cal, protein, carbs, fat) {
@@ -735,6 +750,19 @@ async function toggleClientPlan(el, table, id) {
   generateAIInsight();
   const logEl = document.getElementById('c-log');
   if (logEl && logEl.classList.contains('active')) await loadFoodLog();
+
+  // Notify coach when workout is checked
+  if (table === 'workout_plans' && newStatus && currentProfile?.trainer_id) {
+    const { data: workoutItem } = await sb.from('workout_plans').select('exercise_name').eq('id', id).single();
+    if (workoutItem) {
+      sb.from('notifications').insert({
+        user_id: currentProfile.trainer_id,
+        title: (currentProfile.full_name || 'Your member') + ' completed a workout',
+        body: workoutItem.exercise_name + ' — marked as done',
+        type: 'workout_log'
+      }).then(() => {}).catch(() => {});
+    }
+  }
 }
 async function loadClientMessages() {
   if (!currentProfile?.trainer_id) {
@@ -820,7 +848,12 @@ async function loadTrainerApp() {
     const c = document.getElementById('clientList');
     if (c) c.innerHTML = '<div style="padding:20px;color:#B54040;font-size:13px;">Error: ' + e.message + '</div>';
   }
-  setTimeout(() => { initFirebase(); checkUnreadNotifications(); }, 2000);
+  setTimeout(() => {
+    initFirebase();
+    checkUnreadNotifications();
+    // Poll for new notifications every 30 seconds
+    setInterval(checkUnreadNotifications, 30000);
+  }, 2000);
 }
 
 function updateTrainerProfile() {
